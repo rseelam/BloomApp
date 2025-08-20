@@ -1,0 +1,567 @@
+Initialized native services in: /Users/rajaseelam/.gradle/native
+Initialized jansi services in: /Users/rajaseelam/.gradle/native
+Found daemon DaemonInfo{pid=36952, address=[36798e57-1858-4d4e-b3ca-61003321caa6 port:52160, addresses:[/127.0.0.1]], state=Idle, lastBusy=1754989717213, context=DefaultDaemonContext[uid=ce984fd9-7aaa-4ce6-8837-446e7edf7235,javaHome=/Applications/Android Studio.app/Contents/jbr/Contents/Home,javaVersion=21,javaVendor=JetBrains s.r.o.,daemonRegistryDir=/Users/rajaseelam/.gradle/daemon,pid=36952,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:+UseParallelGC,-XX:MaxMetaspaceSize=1024m,-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]} however its context does not match the desired criteria.
+JVM is incompatible.
+Wanted: DaemonRequestContext{jvmCriteria=/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home (no JDK specified, using current Java home), daemonOpts=[-XX:+UseParallelGC, -XX:MaxMetaspaceSize=1024m, -Xmx2048m, -Dfile.encoding=UTF-8, -Duser.country=US, -Duser.language=en, -Duser.variant], applyInstrumentationAgent=true, nativeServicesMode=ENABLED, priority=NORMAL}
+Actual: DefaultDaemonContext[uid=ce984fd9-7aaa-4ce6-8837-446e7edf7235,javaHome=/Applications/Android Studio.app/Contents/jbr/Contents/Home,javaVersion=21,javaVendor=JetBrains s.r.o.,daemonRegistryDir=/Users/rajaseelam/.gradle/daemon,pid=36952,idleTimeout=10800000,priority=NORMAL,applyInstrumentationAgent=true,nativeServicesMode=ENABLED,daemonOpts=-XX:+UseParallelGC,-XX:MaxMetaspaceSize=1024m,-Xmx2048m,-Dfile.encoding=UTF-8,-Duser.country=US,-Duser.language=en,-Duser.variant]
+
+  Looking for a different daemon...
+The client will now receive all logging from the daemon (pid: 33835). The daemon log file: /Users/rajaseelam/.gradle/daemon/8.13/daemon-33835.out.log
+Starting 16th build in daemon [uptime: 1 hrs 18 mins 49.823 secs, performance: 97%, GC rate: 0.00/s, heap usage: 16% of 1.3 GiB, non-heap usage: 23% of 1 GiB]
+Using 16 worker leases.
+Now considering [/Users/rajaseelam/AndroidStudioProjects/BloomApp] as hierarchies to watch
+Calculating task graph as configuration cache cannot be reused because file 'app/build.gradle.kts' has changed.
+Now considering [/Users/rajaseelam/AndroidStudioProjects/BloomApp] as hierarchies to watch
+Watching the file system is configured to be enabled if available
+File system watching is active
+Starting Build
+Settings evaluated using settings file '/Users/rajaseelam/AndroidStudioProjects/BloomApp/settings.gradle.kts'.
+Using local directory build cache for the root build (location = /Users/rajaseelam/.gradle/caches/build-cache-1, remove unused entries = after 7 days).
+Projects loaded. Root project using build file '/Users/rajaseelam/AndroidStudioProjects/BloomApp/build.gradle.kts'.
+Included projects: [root project 'BloomApp', project ':app']
+
+> Configure project :
+Evaluating root project 'BloomApp' using build file '/Users/rajaseelam/AndroidStudioProjects/BloomApp/build.gradle.kts'.
+Resolved plugin [id: 'com.android.application', version: '8.7.3', apply: false]
+Resolved plugin [id: 'com.android.library', version: '8.7.3', apply: false]
+Resolved plugin [id: 'org.jetbrains.kotlin.android', version: '2.0.21', apply: false]
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization', version: '2.0.21', apply: false]
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose', version: '2.0.21', apply: false]
+
+> Configure project :app
+Evaluating project ':app' using build file '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build.gradle.kts'.
+Resolved plugin [id: 'com.android.application']
+Resolved plugin [id: 'org.jetbrains.kotlin.android']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.serialization']
+Resolved plugin [id: 'org.jetbrains.kotlin.plugin.compose']
+Using default execution profile
+Using Kotlin Gradle Plugin gradle85 variant
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+Detected Android Gradle Plugin compose compiler configuration
+All projects evaluated.
+Task name matched 'assembleDebug'
+Selected primary task 'assembleDebug' from project :
+WARNING: We recommend using a newer Android Gradle plugin to use compileSdk = 36
+
+This Android Gradle plugin (8.7.3) was tested up to compileSdk = 35.
+
+You are strongly encouraged to update your project to use a newer
+Android Gradle plugin that has been tested with compileSdk = 36.
+
+If you are already using the latest version of the Android Gradle plugin,
+you may need to wait until a newer version with support for compileSdk = 36 is available.
+
+For more information refer to the compatibility table:
+https://d.android.com/r/tools/api-level-support
+
+To suppress this warning, add/update
+    android.suppressUnsupportedCompileSdk=36
+to this project's gradle.properties.
+Tasks to be executed: [task ':app:preBuild', task ':app:preDebugBuild', task ':app:mergeDebugNativeDebugMetadata', task ':app:checkKotlinGradlePluginConfigurationErrors', task ':app:generateDebugBuildConfig', task ':app:checkDebugAarMetadata', task ':app:generateDebugResValues', task ':app:mapDebugSourceSetPaths', task ':app:generateDebugResources', task ':app:mergeDebugResources', task ':app:packageDebugResources', task ':app:parseDebugLocalResources', task ':app:createDebugCompatibleScreenManifests', task ':app:extractDeepLinksDebug', task ':app:processDebugMainManifest', task ':app:processDebugManifest', task ':app:processDebugManifestForPackage', task ':app:processDebugResources', task ':app:compileDebugKotlin', task ':app:javaPreCompileDebug', task ':app:compileDebugJavaWithJavac', task ':app:mergeDebugShaders', task ':app:compileDebugShaders', task ':app:generateDebugAssets', task ':app:mergeDebugAssets', task ':app:compressDebugAssets', task ':app:desugarDebugFileDependencies', task ':app:dexBuilderDebug', task ':app:mergeDebugGlobalSynthetics', task ':app:processDebugJavaRes', task ':app:mergeDebugJavaResource', task ':app:checkDebugDuplicateClasses', task ':app:mergeExtDexDebug', task ':app:mergeLibDexDebug', task ':app:mergeProjectDexDebug', task ':app:mergeDebugJniLibFolders', task ':app:mergeDebugNativeLibs', task ':app:stripDebugDebugSymbols', task ':app:validateSigningDebug', task ':app:writeDebugAppMetadata', task ':app:writeDebugSigningConfigVersions', task ':app:packageDebug', task ':app:createDebugApkListingFileRedirect', task ':app:assembleDebug']
+Tasks that were excluded: []
+Using local directory build cache for the root build (location = /Users/rajaseelam/.gradle/caches/build-cache-1, remove unused entries = after 7 days).
+Ignoring listeners of task graph ready event, as this build (:) has already executed work.
+Resolve mutations for :app:preBuild (Thread[Execution worker,5,main]) started.
+Resolve mutations for :app:checkKotlinGradlePluginConfigurationErrors (Thread[Execution worker Thread 2,5,main]) started.
+:app:checkKotlinGradlePluginConfigurationErrors (Thread[Execution worker Thread 2,5,main]) started.
+:app:preBuild (Thread[Execution worker,5,main]) started.
+
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+Skipping task ':app:checkKotlinGradlePluginConfigurationErrors' as task onlyIf 'errorDiagnostics are present' is false.
+
+> Task :app:preBuild UP-TO-DATE
+Skipping task ':app:preBuild' as it has no actions.
+Resolve mutations for :app:preDebugBuild (Thread[Execution worker Thread 2,5,main]) started.
+:app:preDebugBuild (Thread[Execution worker Thread 7,5,main]) started.
+
+> Task :app:preDebugBuild UP-TO-DATE
+Skipping task ':app:preDebugBuild' as it has no actions.
+Resolve mutations for :app:mergeDebugNativeDebugMetadata (Thread[Execution worker Thread 7,5,main]) started.
+Resolve mutations for :app:generateDebugBuildConfig (Thread[included builds,5,main]) started.
+Resolve mutations for :app:checkDebugAarMetadata (Thread[Execution worker,5,main]) started.
+Resolve mutations for :app:generateDebugResValues (Thread[Execution worker Thread 9,5,main]) started.
+Resolve mutations for :app:createDebugCompatibleScreenManifests (Thread[Execution worker Thread 4,5,main]) started.
+:app:mergeDebugNativeDebugMetadata (Thread[Execution worker Thread 7,5,main]) started.
+Resolve mutations for :app:javaPreCompileDebug (Thread[Execution worker Thread 5,5,main]) started.
+:app:generateDebugBuildConfig (Thread[included builds,5,main]) started.
+Resolve mutations for :app:mergeDebugShaders (Thread[Execution worker Thread 8,5,main]) started.
+:app:generateDebugResValues (Thread[Execution worker Thread 9,5,main]) started.
+Resolve mutations for :app:mergeDebugJniLibFolders (Thread[Execution worker Thread 3,5,main]) started.
+Resolve mutations for :app:validateSigningDebug (Thread[Execution worker Thread 15,5,main]) started.
+Resolve mutations for :app:writeDebugAppMetadata (Thread[Execution worker Thread 14,5,main]) started.
+:app:mergeDebugShaders (Thread[Execution worker Thread 8,5,main]) started.
+Resolve mutations for :app:desugarDebugFileDependencies (Thread[Execution worker Thread 6,5,main]) started.
+Resolve mutations for :app:writeDebugSigningConfigVersions (Thread[Execution worker Thread 13,5,main]) started.
+:app:mergeDebugJniLibFolders (Thread[Execution worker Thread 3,5,main]) started.
+:app:desugarDebugFileDependencies (Thread[Execution worker Thread 6,5,main]) started.
+:app:writeDebugSigningConfigVersions (Thread[Execution worker Thread 13,5,main]) started.
+Resolve mutations for :app:checkDebugDuplicateClasses (Thread[Execution worker Thread 2,5,main]) started.
+:app:writeDebugAppMetadata (Thread[Execution worker Thread 11,5,main]) started.
+:app:createDebugCompatibleScreenManifests (Thread[Execution worker Thread 4,5,main]) started.
+:app:javaPreCompileDebug (Thread[Execution worker Thread 5,5,main]) started.
+
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+Skipping task ':app:mergeDebugNativeDebugMetadata' as it has no source files and no previous output files.
+:app:checkDebugAarMetadata (Thread[Execution worker,5,main]) started.
+:app:checkDebugDuplicateClasses (Thread[Execution worker Thread 2,5,main]) started.
+:app:validateSigningDebug (Thread[Execution worker Thread 15,5,main]) started.
+
+> Task :app:generateDebugResValues FROM-CACHE
+Build cache key for task ':app:generateDebugResValues' is 2a8e034daa80838fc06c4c9bd9233ef8
+Task ':app:generateDebugResValues' is not up-to-date because:
+  Output property 'outputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/generated/res/resValues/debug has been removed.
+Loaded cache entry for task ':app:generateDebugResValues' with cache key 2a8e034daa80838fc06c4c9bd9233ef8
+Resolve mutations for :app:mapDebugSourceSetPaths (Thread[Execution worker Thread 9,5,main]) started.
+:app:mapDebugSourceSetPaths (Thread[Execution worker Thread 9,5,main]) started.
+Resolve mutations for :app:generateDebugResources (Thread[Execution worker Thread 7,5,main]) started.
+:app:generateDebugResources (Thread[Execution worker Thread 7,5,main]) started.
+Resolve mutations for :app:extractDeepLinksDebug (Thread[Execution worker Thread 12,5,main]) started.
+
+> Task :app:generateDebugBuildConfig FROM-CACHE
+Build cache key for task ':app:generateDebugBuildConfig' is 5c90cab471a12c622262e9d145d8a8e2
+Task ':app:generateDebugBuildConfig' is not up-to-date because:
+  Output property 'sourceOutputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/generated/source/buildConfig/debug has been removed.
+  Output property 'sourceOutputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/generated/source/buildConfig/debug/com has been removed.
+  Output property 'sourceOutputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/generated/source/buildConfig/debug/com/bloom has been removed.
+  and more...
+Loaded cache entry for task ':app:generateDebugBuildConfig' with cache key 5c90cab471a12c622262e9d145d8a8e2
+
+> Task :app:desugarDebugFileDependencies FROM-CACHE
+Build cache key for task ':app:desugarDebugFileDependencies' is 5204be8bea2e8a4bcf45ea8ce874a75e
+Task ':app:desugarDebugFileDependencies' is not up-to-date because:
+  Output property 'outputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/external_file_lib_dex_archives/debug/desugarDebugFileDependencies has been removed.
+  Output property 'outputGlobalSynthetics' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/global_synthetics_file_lib/debug/desugarDebugFileDependencies has been removed.
+Loaded cache entry for task ':app:desugarDebugFileDependencies' with cache key 5204be8bea2e8a4bcf45ea8ce874a75e
+
+> Task :app:writeDebugSigningConfigVersions
+Caching disabled for task ':app:writeDebugSigningConfigVersions' because:
+  Caching has been disabled for the task
+Task ':app:writeDebugSigningConfigVersions' is not up-to-date because:
+  Output property 'outputFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/signing_config_versions/debug/writeDebugSigningConfigVersions/signing-config-versions.json has been removed.
+:app:extractDeepLinksDebug (Thread[Execution worker Thread 12,5,main]) started.
+
+> Task :app:javaPreCompileDebug FROM-CACHE
+Build cache key for task ':app:javaPreCompileDebug' is 0d50ab74818c219dd977eb5e6b041ba4
+Task ':app:javaPreCompileDebug' is not up-to-date because:
+  Output property 'annotationProcessorListFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/annotation_processor_list/debug/javaPreCompileDebug/annotationProcessors.json has been removed.
+Loaded cache entry for task ':app:javaPreCompileDebug' with cache key 0d50ab74818c219dd977eb5e6b041ba4
+
+> Task :app:writeDebugAppMetadata
+Caching disabled for task ':app:writeDebugAppMetadata' because:
+  Caching has been disabled for the task
+Task ':app:writeDebugAppMetadata' is not up-to-date because:
+  Output property 'outputFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/app_metadata/debug/writeDebugAppMetadata/app-metadata.properties has been removed.
+
+> Task :app:validateSigningDebug
+Caching disabled for task ':app:validateSigningDebug' because:
+  Caching has been disabled for the task
+Task ':app:validateSigningDebug' is not up-to-date because:
+  Output property 'dummyOutputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/validate_signing_config/debug/validateSigningDebug has been removed.
+
+> Task :app:createDebugCompatibleScreenManifests
+Caching disabled for task ':app:createDebugCompatibleScreenManifests' because:
+  Caching has been disabled for the task
+Task ':app:createDebugCompatibleScreenManifests' is not up-to-date because:
+  Output property 'outputFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/compatible_screen_manifest/debug/createDebugCompatibleScreenManifests has been removed.
+  Output property 'outputFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/compatible_screen_manifest/debug/createDebugCompatibleScreenManifests/output-metadata.json has been removed.
+
+> Task :app:mergeDebugShaders
+Caching disabled for task ':app:mergeDebugShaders' because:
+  Simple merging task
+Task ':app:mergeDebugShaders' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_shaders/debug/mergeDebugShaders/out has been removed.
+The input changes require a full rebuild for incremental task ':app:mergeDebugShaders'.
+Resolve mutations for :app:compileDebugShaders (Thread[Execution worker Thread 8,5,main]) started.
+:app:compileDebugShaders (Thread[Execution worker Thread 8,5,main]) started.
+
+> Task :app:compileDebugShaders NO-SOURCE
+Skipping task ':app:compileDebugShaders' as it has no source files and no previous output files.
+Resolve mutations for :app:generateDebugAssets (Thread[Execution worker Thread 8,5,main]) started.
+:app:generateDebugAssets (Thread[Execution worker Thread 8,5,main]) started.
+
+> Task :app:generateDebugAssets UP-TO-DATE
+Skipping task ':app:generateDebugAssets' as it has no actions.
+Resolve mutations for :app:mergeDebugAssets (Thread[Execution worker Thread 11,5,main]) started.
+:app:mergeDebugAssets (Thread[Execution worker Thread 11,5,main]) started.
+
+> Task :app:extractDeepLinksDebug FROM-CACHE
+Build cache key for task ':app:extractDeepLinksDebug' is b673e312fd63958f9cff0574c2aa232e
+Task ':app:extractDeepLinksDebug' is not up-to-date because:
+  Output property 'navigationJson' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/navigation_json/debug/extractDeepLinksDebug/navigation.json has been removed.
+Loaded cache entry for task ':app:extractDeepLinksDebug' with cache key b673e312fd63958f9cff0574c2aa232e
+
+> Task :app:mergeDebugJniLibFolders
+Caching disabled for task ':app:mergeDebugJniLibFolders' because:
+  Simple merging task
+Task ':app:mergeDebugJniLibFolders' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_jni_libs/debug/mergeDebugJniLibFolders/out has been removed.
+The input changes require a full rebuild for incremental task ':app:mergeDebugJniLibFolders'.
+Resolve mutations for :app:processDebugMainManifest (Thread[Execution worker Thread 12,5,main]) started.
+Resolve mutations for :app:mergeDebugNativeLibs (Thread[Execution worker Thread 3,5,main]) started.
+:app:processDebugMainManifest (Thread[Execution worker Thread 12,5,main]) started.
+
+> Task :app:generateDebugResources FROM-CACHE
+Build cache key for task ':app:generateDebugResources' is 978d3535aedc6f36ebe99bd2a8c98dc1
+Task ':app:generateDebugResources' is not up-to-date because:
+  Output property 'validationReportFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/nested_resources_validation_report/debug/generateDebugResources/nestedResourcesValidationReport.txt has been removed.
+Loaded cache entry for task ':app:generateDebugResources' with cache key 978d3535aedc6f36ebe99bd2a8c98dc1
+Resolve mutations for :app:mergeDebugResources (Thread[Execution worker Thread 7,5,main]) started.
+
+> Task :app:mapDebugSourceSetPaths
+Caching disabled for task ':app:mapDebugSourceSetPaths' because:
+  Caching has been disabled for the task
+Task ':app:mapDebugSourceSetPaths' is not up-to-date because:
+  Output property 'filepathMappingFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/source_set_path_map/debug/mapDebugSourceSetPaths/file-map.txt has been removed.
+Resolve mutations for :app:packageDebugResources (Thread[included builds,5,main]) started.
+:app:mergeDebugResources (Thread[Execution worker Thread 7,5,main]) started.
+:app:mergeDebugNativeLibs (Thread[Execution worker Thread 3,5,main]) started.
+:app:packageDebugResources (Thread[included builds,5,main]) started.
+
+> Task :app:mergeDebugAssets
+Caching disabled for task ':app:mergeDebugAssets' because:
+  Simple merging task
+Task ':app:mergeDebugAssets' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/assets/debug/mergeDebugAssets has been removed.
+The input changes require a full rebuild for incremental task ':app:mergeDebugAssets'.
+Resolve mutations for :app:compressDebugAssets (Thread[Execution worker Thread 11,5,main]) started.
+:app:compressDebugAssets (Thread[Execution worker Thread 11,5,main]) started.
+
+> Task :app:checkDebugAarMetadata
+Caching disabled for task ':app:checkDebugAarMetadata' because:
+  Caching has been disabled for the task
+Task ':app:checkDebugAarMetadata' is not up-to-date because:
+  Output property 'dummyOutputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/aar_metadata_check/debug/checkDebugAarMetadata has been removed.
+
+> Task :app:compressDebugAssets FROM-CACHE
+Build cache key for task ':app:compressDebugAssets' is d5c6934c1936541d963871267452e574
+Task ':app:compressDebugAssets' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/compressed_assets/debug/compressDebugAssets/out has been removed.
+Loaded cache entry for task ':app:compressDebugAssets' with cache key d5c6934c1936541d963871267452e574
+
+> Task :app:processDebugMainManifest FROM-CACHE
+Build cache key for task ':app:processDebugMainManifest' is 242d018aab4c9c1bab4bd37952e9ba5f
+Task ':app:processDebugMainManifest' is not up-to-date because:
+  Output property 'mergeBlameFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/manifest_merge_blame_file/debug/processDebugMainManifest/manifest-merger-blame-debug-report.txt has been removed.
+  Output property 'mergedManifest' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_manifest/debug/processDebugMainManifest/AndroidManifest.xml has been removed.
+  Output property 'reportFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/outputs/logs/manifest-merger-debug-report.txt has been removed.
+Loaded cache entry for task ':app:processDebugMainManifest' with cache key 242d018aab4c9c1bab4bd37952e9ba5f
+Resolve mutations for :app:processDebugManifest (Thread[Execution worker Thread 12,5,main]) started.
+:app:processDebugManifest (Thread[Execution worker Thread 12,5,main]) started.
+
+> Task :app:processDebugManifest FROM-CACHE
+Build cache key for task ':app:processDebugManifest' is 87c8e678cc235d7f187fd9b9f9e5e7dd
+Task ':app:processDebugManifest' is not up-to-date because:
+  Output property 'multiApkManifestOutputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_manifests/debug/processDebugManifest has been removed.
+  Output property 'multiApkManifestOutputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_manifests/debug/processDebugManifest/AndroidManifest.xml has been removed.
+  Output property 'multiApkManifestOutputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_manifests/debug/processDebugManifest/output-metadata.json has been removed.
+Loaded cache entry for task ':app:processDebugManifest' with cache key 87c8e678cc235d7f187fd9b9f9e5e7dd
+Resolve mutations for :app:processDebugManifestForPackage (Thread[Execution worker Thread 12,5,main]) started.
+:app:processDebugManifestForPackage (Thread[Execution worker Thread 12,5,main]) started.
+
+> Task :app:processDebugManifestForPackage FROM-CACHE
+Build cache key for task ':app:processDebugManifestForPackage' is edcd1556898ee26604282039fd4d7bbd
+Task ':app:processDebugManifestForPackage' is not up-to-date because:
+  Output property 'packageManifests' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/packaged_manifests/debug/processDebugManifestForPackage has been removed.
+  Output property 'packageManifests' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/packaged_manifests/debug/processDebugManifestForPackage/AndroidManifest.xml has been removed.
+  Output property 'packageManifests' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/packaged_manifests/debug/processDebugManifestForPackage/output-metadata.json has been removed.
+Loaded cache entry for task ':app:processDebugManifestForPackage' with cache key edcd1556898ee26604282039fd4d7bbd
+
+> Task :app:mergeDebugNativeLibs
+Caching disabled for task ':app:mergeDebugNativeLibs' because:
+  Caching has been disabled for the task
+Task ':app:mergeDebugNativeLibs' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_native_libs/debug/mergeDebugNativeLibs/out/lib/arm64-v8a has been removed.
+  and more...
+Resolve mutations for :app:stripDebugDebugSymbols (Thread[Execution worker Thread 3,5,main]) started.
+:app:stripDebugDebugSymbols (Thread[Execution worker Thread 3,5,main]) started.
+
+> Task :app:checkDebugDuplicateClasses
+Caching disabled for task ':app:checkDebugDuplicateClasses' because:
+  Caching has been disabled for the task
+Task ':app:checkDebugDuplicateClasses' is not up-to-date because:
+  Output property 'dummyOutputDirectory' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/duplicate_classes_check/debug/checkDebugDuplicateClasses has been removed.
+Resolve mutations for :app:mergeExtDexDebug (Thread[Execution worker Thread 2,5,main]) started.
+Resolve mutations for :app:mergeLibDexDebug (Thread[Execution worker Thread 9,5,main]) started.
+:app:mergeExtDexDebug (Thread[Execution worker Thread 2,5,main]) started.
+:app:mergeLibDexDebug (Thread[Execution worker Thread 9,5,main]) started.
+
+> Task :app:packageDebugResources FROM-CACHE
+Build cache key for task ':app:packageDebugResources' is c799b53953b0ac0af339d0ad2cd75ed3
+Task ':app:packageDebugResources' is not up-to-date because:
+  Output property 'dataBindingLayoutInfoOutFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/data_binding_layout_info_type_package/debug/packageDebugResources/out has been removed.
+  Output property 'incrementalFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/incremental/debug/packageDebugResources has been removed.
+  Output property 'incrementalFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/incremental/debug/packageDebugResources/compile-file-map.properties has been removed.
+  and more...
+Loaded cache entry for task ':app:packageDebugResources' with cache key c799b53953b0ac0af339d0ad2cd75ed3
+Resolve mutations for :app:parseDebugLocalResources (Thread[Execution worker Thread 5,5,main]) started.
+:app:parseDebugLocalResources (Thread[Execution worker Thread 5,5,main]) started.
+
+> Task :app:mergeLibDexDebug FROM-CACHE
+Build cache key for task ':app:mergeLibDexDebug' is 095f24faaa73db3276fc7f27210f6057
+Task ':app:mergeLibDexDebug' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/dex/debug/mergeLibDexDebug has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/dex/debug/mergeLibDexDebug/0 has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/dex/debug/mergeLibDexDebug/1 has been removed.
+  and more...
+Loaded cache entry for task ':app:mergeLibDexDebug' with cache key 095f24faaa73db3276fc7f27210f6057
+
+> Task :app:parseDebugLocalResources FROM-CACHE
+Build cache key for task ':app:parseDebugLocalResources' is a0a062fcdfc06d7dcffea9394571212b
+Task ':app:parseDebugLocalResources' is not up-to-date because:
+  Output property 'librarySymbolsFile' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/local_only_symbol_list/debug/parseDebugLocalResources/R-def.txt has been removed.
+Loaded cache entry for task ':app:parseDebugLocalResources' with cache key a0a062fcdfc06d7dcffea9394571212b
+
+> Task :app:stripDebugDebugSymbols
+Caching disabled for task ':app:stripDebugDebugSymbols' because:
+  Caching has been disabled for the task
+Task ':app:stripDebugDebugSymbols' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out/lib has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/stripped_native_libs/debug/stripDebugDebugSymbols/out/lib/arm64-v8a has been removed.
+  and more...
+The input changes require a full rebuild for incremental task ':app:stripDebugDebugSymbols'.
+
+> Task :app:mergeDebugResources FROM-CACHE
+Build cache key for task ':app:mergeDebugResources' is 227dbc68bb9342e7bd904ec29357b80c
+Task ':app:mergeDebugResources' is not up-to-date because:
+  Output property 'blameLogOutputFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_res_blame_folder/debug/mergeDebugResources/out has been removed.
+  Output property 'blameLogOutputFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_res_blame_folder/debug/mergeDebugResources/out/multi-v2 has been removed.
+  Output property 'blameLogOutputFolder' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/merged_res_blame_folder/debug/mergeDebugResources/out/multi-v2/mergeDebugResources.json has been removed.
+  and more...
+Loaded cache entry for task ':app:mergeDebugResources' with cache key 227dbc68bb9342e7bd904ec29357b80c
+Resolve mutations for :app:processDebugResources (Thread[Execution worker Thread 7,5,main]) started.
+:app:processDebugResources (Thread[Execution worker Thread 7,5,main]) started.
+
+> Task :app:processDebugResources FROM-CACHE
+WARNING: We recommend using a newer Android Gradle plugin to use compileSdk = 36
+
+This Android Gradle plugin (8.7.3) was tested up to compileSdk = 35.
+
+You are strongly encouraged to update your project to use a newer
+Android Gradle plugin that has been tested with compileSdk = 36.
+
+If you are already using the latest version of the Android Gradle plugin,
+you may need to wait until a newer version with support for compileSdk = 36 is available.
+
+For more information refer to the compatibility table:
+https://d.android.com/r/tools/api-level-support
+
+To suppress this warning, add/update
+    android.suppressUnsupportedCompileSdk=36
+to this project's gradle.properties.
+Build cache key for task ':app:processDebugResources' is 8d1848a314c4d38806162b0c6c63162f
+Task ':app:processDebugResources' is not up-to-date because:
+  Output property 'RClassOutputJar' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/compile_and_runtime_not_namespaced_r_class_jar/debug/processDebugResources/R.jar has been removed.
+  Output property 'linkedResourcesOutputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/linked_resources_binary_format/debug/processDebugResources has been removed.
+  Output property 'linkedResourcesOutputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/linked_resources_binary_format/debug/processDebugResources/linked-resources-binary-format-debug.ap_ has been removed.
+  and more...
+Loaded cache entry for task ':app:processDebugResources' with cache key 8d1848a314c4d38806162b0c6c63162f
+Resolve mutations for :app:compileDebugKotlin (Thread[Execution worker Thread 7,5,main]) started.
+:app:compileDebugKotlin (Thread[Execution worker Thread 7,5,main]) started.
+
+> Task :app:mergeExtDexDebug FROM-CACHE
+Build cache key for task ':app:mergeExtDexDebug' is 4b5b0fa5e33cde4abaed0309c27906bd
+Task ':app:mergeExtDexDebug' is not up-to-date because:
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/dex/debug/mergeExtDexDebug has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/dex/debug/mergeExtDexDebug/classes.dex has been removed.
+  Output property 'outputDir' file /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/intermediates/dex/debug/mergeExtDexDebug/classes2.dex has been removed.
+  and more...
+Loaded cache entry for task ':app:mergeExtDexDebug' with cache key 4b5b0fa5e33cde4abaed0309c27906bd
+
+> Task :app:compileDebugKotlin FAILED
+Build cache key for task ':app:compileDebugKotlin' is 66ea627275d70abe0d48357f7940f20f
+Task ':app:compileDebugKotlin' is not up-to-date because:
+  Task has failed previously.
+The input changes require a full rebuild for incremental task ':app:compileDebugKotlin'.
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/kotlin', not found
+file or directory '/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/debug/java', not found
+Kotlin source files: /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/navigation/NavigationGraph.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatViewModel.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/profile/ProfileVFiewModel.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/profile/ProfileScreen.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/task/TaskViewModel.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/task/TaskDetailScreen.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/login/LoginViewModel.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/login/LoginScreen.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/ImagePicker.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/PointsDisplay.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/TaskCard.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/theme/Color.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/theme/Theme.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/theme/Type.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/MainActivity.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/BloomApplication.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/network/dto/N8nResponse.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/network/dto/N8nRequest.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/network/NetworkModule.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/network/N8nApiServlce.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/utils/Extensions.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/utils/ImageUtils.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/utils/Constants.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/ChatRepository.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/local/PreferencesManager.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/model/ValidationResult.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/model/User.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/model/Task.kt, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/model/Message.kt
+Java source files: /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/generated/source/buildConfig/debug/com/bloom/familytasks/BuildConfig.java
+Script source files: 
+Script file extensions: 
+Using Kotlin/JVM incremental compilation
+[KOTLIN] Kotlin compilation 'jdkHome' argument: null
+Options for KOTLIN DAEMON: IncrementalCompilationOptions(super=CompilationOptions(compilerMode=INCREMENTAL_COMPILER, targetPlatform=JVM, reportCategories=[0, 3], reportSeverity=2, requestedCompilationResults=[0], kotlinScriptExtensions=[]), areFileChangesKnown=false, modifiedFiles=null, deletedFiles=null, classpathChanges=NotAvailableForNonIncrementalRun, workingDir=/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/kotlin/compileDebugKotlin/cacheable, multiModuleICSettings=MultiModuleICSettings(buildHistoryFile=/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/kotlin/compileDebugKotlin/local-state/build-history.bin, useModuleDetection=true), usePreciseJavaTracking=true, icFeatures=IncrementalCompilationFeatures(withAbiSnapshot=false, preciseCompilationResultsBackup=true, keepIncrementalCompilationCachesInMemory=true, enableUnsafeIncrementalCompilationForMultiplatform=false), outputFiles=[/Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/tmp/kotlin-classes/debug, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/kotlin/compileDebugKotlin/cacheable, /Users/rajaseelam/AndroidStudioProjects/BloomApp/app/build/kotlin/compileDebugKotlin/local-state])
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/model/Message.kt:15:27 Unresolved reference 'ValidationResult'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/model/Message.kt:15:27 Serializer has not been found for type 'ERROR CLASS: Symbol not found for ValidationResult?'. To use context serializer as fallback, explicitly annotate type or property with @Contextual
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:9:14 Unresolved reference 'inject'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:10:14 Unresolved reference 'inject'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:12:2 Unresolved reference 'Singleton'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:13:22 Unresolved reference 'Inject'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:39:13 Argument type mismatch: actual type is 'K#2 (type parameter of fun <K> WHEN_CALL(vararg branches: K): K)', but 'K#1 (type parameter of fun <K> TRY_CALL(vararg branches: K): K)' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:40:17 Argument type mismatch: actual type is 'R?', but 'K?' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:40:17 Argument type mismatch: actual type is 'K#2 (type parameter of fun <K> ELVIS_CALL(x: K?, y: K): K)', but 'K#1 (type parameter of fun <K> WHEN_CALL(vararg branches: K): K)' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:40:34 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:40:34 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+fun <T, R> T.let(block: (T) -> R): R
+    [R|Contract description]
+     <
+        CallsInPlace(block, EXACTLY_ONCE)
+    >
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:40:40 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:43:21 Suspension functions can only be called within coroutine body.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:44:22 Argument type mismatch: actual type is 'kotlin.Unit', but 'K' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:46:17 Argument type mismatch: actual type is 'kotlin.Unit', but 'K' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:49:13 Argument type mismatch: actual type is 'kotlin.Unit', but 'K' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:60:20 Unresolved reference 'ValidationResult'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:81:13 Argument type mismatch: actual type is 'K#2 (type parameter of fun <K> WHEN_CALL(vararg branches: K): K)', but 'K#1 (type parameter of fun <K> TRY_CALL(vararg branches: K): K)' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:82:17 Argument type mismatch: actual type is 'R?', but 'K?' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:82:17 Argument type mismatch: actual type is 'K#2 (type parameter of fun <K> ELVIS_CALL(x: K?, y: K): K)', but 'K#1 (type parameter of fun <K> WHEN_CALL(vararg branches: K): K)' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:82:34 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:82:34 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+fun <T, R> T.let(block: (T) -> R): R
+    [R|Contract description]
+     <
+        CallsInPlace(block, EXACTLY_ONCE)
+    >
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:82:40 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:84:21 Suspension functions can only be called within coroutine body.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:84:26 Argument type mismatch: actual type is 'kotlin.Result<T>', but 'kotlin.Result<ERROR CLASS: Symbol not found for ValidationResult>' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:84:33 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:85:22 Argument type mismatch: actual type is 'kotlin.Unit', but 'K' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:85:27 Argument type mismatch: actual type is 'kotlin.Result<T>', but 'kotlin.Result<ERROR CLASS: Symbol not found for ValidationResult>' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:85:34 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:87:17 Argument type mismatch: actual type is 'kotlin.Unit', but 'K' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:87:22 Argument type mismatch: actual type is 'kotlin.Result<T>', but 'kotlin.Result<ERROR CLASS: Symbol not found for ValidationResult>' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:87:29 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:90:13 Argument type mismatch: actual type is 'kotlin.Unit', but 'K' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:90:18 Argument type mismatch: actual type is 'kotlin.Result<T>', but 'kotlin.Result<ERROR CLASS: Symbol not found for ValidationResult>' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:90:25 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:94:49 Unresolved reference 'N8nResponse'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:100:55 Unresolved reference 'N8nResponse'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/data/repository/N8nRepository.kt:100:69 Unresolved reference 'ValidationResult'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/network/N8nApiServlce.kt:12:17 Unresolved reference 'N8nResponse'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/network/N8nApiServlce.kt:19:28 Unresolved reference 'MultipartBody'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/network/N8nApiServlce.kt:20:17 Unresolved reference 'N8nResponse'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:164:43 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:164:43 Unresolved reference. None of the following candidates is applicable because of a receiver type mismatch:
+fun <T, R> T.let(block: (T) -> R): R
+    [R|Contract description]
+     <
+        CallsInPlace(block, EXACTLY_ONCE)
+    >
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:164:49 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:165:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:166:21 @Composable invocations can only happen from the context of a @Composable function
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:182:34 Unresolved reference 'ValidationResult'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:185:30 'when' expression must be exhaustive. Add an 'else' branch.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:185:43 Unresolved reference 'status'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:186:17 Unresolved reference 'ValidationStatus'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:187:17 Unresolved reference 'ValidationStatus'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:188:17 Unresolved reference 'ValidationStatus'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:200:21 'when' expression must be exhaustive. Add an 'else' branch.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:200:34 Unresolved reference 'status'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:201:25 Unresolved reference 'ValidationStatus'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:202:25 Unresolved reference 'ValidationStatus'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:203:25 Unresolved reference 'ValidationStatus'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:210:38 Unresolved reference 'totalPointsEarned'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:210:68 Unresolved reference 'maxPointsPossible'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:215:20 Unresolved reference 'feedback'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:215:30 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:215:36 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:216:17 @Composable invocations can only happen from the context of a @Composable function
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/components/MessageBubble.kt:219:43 @Composable invocations can only happen from the context of a @Composable function
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:22:16 Unresolved reference 'ChatViewModel'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:22:32 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:24:21 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:24:21 Property delegate must have a 'getValue(Nothing?, KProperty0<ERROR CLASS: Cannot infer argument for type parameter T>)' method. None of the following functions is applicable:
+fun <T> State<T>.getValue(thisObj: Any?, property: KProperty<*>): T
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:24:31 Unresolved reference 'messages'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:24:40 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:25:24 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:25:24 Property delegate must have a 'getValue(Nothing?, KProperty0<ERROR CLASS: Cannot infer argument for type parameter T>)' method. None of the following functions is applicable:
+fun <T> State<T>.getValue(thisObj: Any?, property: KProperty<*>): T
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:25:34 Unresolved reference 'currentUser'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:25:46 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:26:22 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:26:22 Property delegate must have a 'getValue(Nothing?, KProperty0<ERROR CLASS: Cannot infer argument for type parameter T>)' method. None of the following functions is applicable:
+fun <T> State<T>.getValue(thisObj: Any?, property: KProperty<*>): T
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:26:32 Unresolved reference 'isLoading'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:26:42 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:69:48 Unresolved reference 'role'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:69:56 Unresolved reference 'UserRole'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:76:37 @Composable invocations can only happen from the context of a @Composable function
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:79:27 Too many arguments for 'fun Badge(modifier: Modifier = ..., containerColor: Color = ..., contentColor: Color = ..., content: @Composable() ComposableFunction1<RowScope, Unit>? = ...): Unit'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:80:29 @Composable invocations can only happen from the context of a @Composable function
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:96:50 Unresolved reference 'role'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:96:58 Unresolved reference 'UserRole'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:113:43 Unresolved reference 'sendMessage'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:117:76 Function invocation 'size(...)' expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:121:63 Unresolved reference 'not' for operator '!'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:146:31 Argument type mismatch: actual type is 'kotlin.Int', but 'com.bloom.familytasks.data.model.Message' was expected.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:147:45 Unresolved reference 'senderId'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:147:70 Unresolved reference 'id'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:148:52 Unresolved reference 'role'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:148:60 Unresolved reference 'UserRole'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:156:9 Unresolved reference 'ImagePickerDialog'.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/screens/chat/ChatScreen.kt:158:34 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/app/src/main/java/com/bloom/familytasks/ui/theme/Theme.kt:105:22 Argument type mismatch: actual type is 'kotlin.text.Typography', but 'androidx.compose.material3.Typography' was expected.
+Finished executing kotlin compiler using DAEMON strategy
+
+0 problems were found storing the configuration cache.
+
+See the complete report at file:///Users/rajaseelam/AndroidStudioProjects/BloomApp/build/reports/configuration-cache/6xfm12tqgrlhgvjxdcbr679cs/9h4ktrxafqk0725gtfou1kty3/configuration-cache-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 951ms
+29 actionable tasks: 13 executed, 16 from cache
+Watched directory hierarchies: [/Users/rajaseelam/AndroidStudioProjects/BloomApp]
+Configuration cache entry stored.
+Configuration Cache (/Users/rajaseelam/AndroidStudioProjects/BloomApp/.gradle/configuration-cache) [subdir: /Users/rajaseelam/AndroidStudioProjects/BloomApp/.gradle/configuration-cache/6c2a86f7-4f54-4f2d-856d-4e4d0761dd48] cleanup deleted 7 files/directories.

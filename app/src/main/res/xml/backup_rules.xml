@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Include shared preferences -->
+    <include domain="sharedpref" path="."/>
+
+    <!-- Include internal files -->
+    <include domain="file" path="."/>
+
+    <!-- Exclude cache and temporary files -->
+    <exclude domain="cache" path="."/>
+    <exclude domain="external" path="."/>
+
+    <!-- Exclude sensitive authentication data -->
+    <exclude domain="sharedpref" path="auth_prefs.xml"/>
+</full-backup-content>
