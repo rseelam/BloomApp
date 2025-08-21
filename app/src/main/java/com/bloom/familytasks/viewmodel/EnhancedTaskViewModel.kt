@@ -1,3 +1,4 @@
+// app/src/main/java/com/bloom/familytasks/viewmodel/EnhancedTaskViewModel.kt
 package com.bloom.familytasks.viewmodel
 
 import android.app.Application
@@ -23,6 +24,77 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
     private val _currentUser = MutableStateFlow("Parent")
     val currentUser: StateFlow<String> = _currentUser
 
+    private val _showChatDialog = MutableStateFlow(false)
+    val showChatDialog: StateFlow<Boolean> = _showChatDialog
+
+    private val _currentChatMessage = MutableStateFlow("")
+    val currentChatMessage: StateFlow<String> = _currentChatMessage
+
+    // NEW: Send custom chore request with proper parameters
+    fun sendCustomChoreRequest(customChoreDescription: String, childName: String = "Johnny") {
+        viewModelScope.launch {
+            repository.sendCustomChoreRequest(
+                customChoreDescription = customChoreDescription,
+                senderName = currentUser.value,
+                childName = childName
+            )
+        }
+    }
+
+    // NEW: Send general chat message
+    fun sendChatMessage(
+        message: String,
+        messageType: MessageType = MessageType.GENERAL,
+        relatedTaskId: String? = null,
+        images: List<Uri> = emptyList()
+    ) {
+        viewModelScope.launch {
+            repository.sendChatMessage(
+                message = message,
+                senderName = currentUser.value,
+                messageType = messageType,
+                relatedTaskId = relatedTaskId,
+                images = images
+            )
+        }
+    }
+
+    // NEW: Send chore question (child asking about task)
+    fun sendChoreQuestion(question: String, taskId: String? = null) {
+        viewModelScope.launch {
+            repository.sendChatMessage(
+                message = question,
+                senderName = currentUser.value,
+                messageType = MessageType.CHORE_QUESTION,
+                relatedTaskId = taskId
+            )
+        }
+    }
+
+    // NEW: Send help request
+    fun sendHelpRequest(helpMessage: String, taskId: String? = null) {
+        viewModelScope.launch {
+            repository.sendChatMessage(
+                message = helpMessage,
+                senderName = currentUser.value,
+                messageType = MessageType.HELP_REQUEST,
+                relatedTaskId = taskId
+            )
+        }
+    }
+
+    // NEW: Child suggests a chore
+    fun suggestChore(suggestion: String) {
+        viewModelScope.launch {
+            repository.sendChatMessage(
+                message = suggestion,
+                senderName = currentUser.value,
+                messageType = MessageType.CHORE_SUGGESTION
+            )
+        }
+    }
+
+    // Existing methods...
     fun assignChoreWithN8n(chore: Chore, childName: String) {
         viewModelScope.launch {
             repository.sendParentTaskRequest(
@@ -73,37 +145,56 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
                     comments = comments
                 )
 
-                // Update locally (since we don't have a direct validation endpoint)
                 updateLocalAssignment(updatedAssignment)
 
-                // Add chat message for validation result
                 val message = ChatMessage(
                     sender = "Validation Agent",
                     content = if (approved)
                         "Task '${it.chore.name}' has been validated! Great job! 🎉"
                     else
                         "Task '${it.chore.name}' needs more work. $comments",
-                    messageType = MessageType.VALIDATION_RESULT
+                    messageType = MessageType.VALIDATION_RESULT,
+                    relatedTaskId = assignmentId
                 )
                 addChatMessage(message)
             }
         }
     }
 
-    // Helper method to update assignment locally
+    // NEW: Chat dialog controls
+    fun showChatDialog() {
+        _showChatDialog.value = true
+    }
+
+    fun hideChatDialog() {
+        _showChatDialog.value = false
+        _currentChatMessage.value = ""
+    }
+
+    fun updateCurrentChatMessage(message: String) {
+        _currentChatMessage.value = message
+    }
+
+    // NEW: Get messages for specific task
+    fun getMessagesForTask(taskId: String): List<ChatMessage> {
+        return repository.getMessagesForTask(taskId)
+    }
+
+    // NEW: Clear all chat messages
+    fun clearAllChatMessages() {
+        repository.clearChatMessages()
+    }
+
     private fun updateLocalAssignment(assignment: ChoreAssignment) {
         val currentAssignments = choreAssignments.value.toMutableList()
         val index = currentAssignments.indexOfFirst { it.id == assignment.id }
         if (index != -1) {
             currentAssignments[index] = assignment
-            // This would need to be added to repository
             repository.updateAssignmentLocally(currentAssignments)
         }
     }
 
-    // Helper method to add chat message
     private fun addChatMessage(message: ChatMessage) {
         repository.addChatMessage(message)
     }
-
 }

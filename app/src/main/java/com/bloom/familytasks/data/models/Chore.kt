@@ -10,11 +10,13 @@ data class Chore(
     val description: String,
     val icon: ImageVector,
     val points: Int = 10,
-    val category: ChoreCategory
+    val category: ChoreCategory,
+    val isCustom: Boolean = false,
+    val createdBy: String? = null
 )
 
 enum class ChoreCategory {
-    CLEANING, KITCHEN, BEDROOM, OUTDOOR, PETS, ORGANIZATION
+    CLEANING, KITCHEN, BEDROOM, OUTDOOR, PETS, ORGANIZATION, CUSTOM
 }
 
 data class ChoreAssignment(
@@ -25,7 +27,8 @@ data class ChoreAssignment(
     val status: TaskStatus = TaskStatus.PENDING,
     val timestamp: Long = System.currentTimeMillis(),
     val validationImages: List<String> = emptyList(),
-    val comments: String = ""
+    val comments: String = "",
+    val chatMessages: List<ChatMessage> = emptyList()
 )
 
 enum class TaskStatus {
@@ -38,9 +41,15 @@ data class ChatMessage(
     val content: String,
     val images: List<String> = emptyList(),
     val timestamp: Long = System.currentTimeMillis(),
-    val messageType: MessageType
+    val messageType: MessageType,
+    val relatedTaskId: String? = null,
+    val requiresResponse: Boolean = false
 )
 
 enum class MessageType {
-    TASK_ASSIGNMENT, TASK_SUBMISSION, VALIDATION_REQUEST, VALIDATION_RESULT, GENERAL
+    TASK_ASSIGNMENT, TASK_SUBMISSION, VALIDATION_REQUEST, VALIDATION_RESULT, GENERAL, CUSTOM_CHORE_REQUEST,
+    CHORE_QUESTION,
+    CHORE_SUGGESTION,
+    HELP_REQUEST,
+    CLARIFICATION
 }

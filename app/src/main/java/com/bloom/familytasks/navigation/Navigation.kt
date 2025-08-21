@@ -1,3 +1,4 @@
+// app/src/main/java/com/bloom/familytasks/navigation/Navigation.kt
 package com.bloom.familytasks.navigation
 
 import androidx.compose.foundation.layout.*
@@ -20,7 +21,6 @@ import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
     val navController = rememberNavController()
 
-    // No bottom tabs - just navigation
     NavHost(
         navController = navController,
         startDestination = "home"
@@ -32,7 +32,7 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
                     navController.navigate("parent")
                 },
                 onChildClick = {
-                    viewModel.switchUser("Johnny")  // Always Johnny
+                    viewModel.switchUser("Johnny")
                     navController.navigate("child")
                 }
             )
@@ -50,8 +50,9 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
         composable("child") {
             UpdatedChildScreen(
                 viewModel = viewModel,
-                childName = "Johnny" , // Always Johnny
-                onNavigateHome = { navController.navigate("home") }
+                childName = "Johnny",
+                onNavigateHome = { navController.navigate("home") },
+                onNavigateToChat = { navController.navigate("chat") }
             )
         }
 
@@ -63,7 +64,7 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
         }
 
         composable("chat") {
-            ChatScreen(
+            EnhancedChatScreen(
                 viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
@@ -93,7 +94,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            "Select Your Role",
+            "Chat & Collaborate on Chores",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -105,7 +106,7 @@ fun HomeScreen(
             onClick = onParentClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp),
+                .height(140.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
@@ -131,8 +132,18 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        "Assign chores & view validations",
-                        style = MaterialTheme.typography.bodyMedium,
+                        "• Send custom chores via bottom chat",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Chat directly with Johnny",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Assign predefined chores",
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     )
                 }
@@ -146,7 +157,7 @@ fun HomeScreen(
             onClick = onChildClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp),
+                .height(140.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             )
@@ -172,8 +183,18 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Text(
-                        "View chores & submit photos",
-                        style = MaterialTheme.typography.bodyMedium,
+                        "• Chat with parents using bottom bar",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Ask questions & request help",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Submit photos & complete tasks",
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
                     )
                 }
@@ -193,16 +214,17 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    Icons.Default.Info,
+                    Icons.Default.Chat,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "Managing chores for Johnny",
+                    "New: Chat directly from any screen!",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

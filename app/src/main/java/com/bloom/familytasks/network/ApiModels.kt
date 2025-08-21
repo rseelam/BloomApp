@@ -1,8 +1,9 @@
+// app/src/main/java/com/bloom/familytasks/network/ApiModels.kt
 package com.bloom.familytasks.network
 
 import com.google.gson.annotations.SerializedName
 
-// Request models matching n8n workflow expectations
+// Keep your existing working format - don't break what works!
 data class ChatRequest(
     @SerializedName("chatInput")
     val chatInput: String
@@ -12,16 +13,16 @@ data class ChatInputData(
     @SerializedName("message")
     val message: String,
 
-    @SerializedName("sender_id")
+    @SerializedName("sender_id")  // Keep original working name
     val senderId: String,
 
-    @SerializedName("child_name")
+    @SerializedName("child_name")  // Keep original working name
     val childName: String? = null,
 
-    @SerializedName("task_id")
+    @SerializedName("task_id")     // Keep original working name
     val taskId: String? = null,
 
-    @SerializedName("parent_task_message")
+    @SerializedName("parent_task_message")  // Keep original working name
     val parentTaskMessage: String? = null,
 
     @SerializedName("images")
@@ -48,7 +49,7 @@ data class ImageAttachment(
     val size: Long? = null
 )
 
-// Response models from n8n workflow
+// Your existing response models - keep them unchanged
 data class ChatResponse(
     @SerializedName("task_id")
     val taskId: String? = null,
@@ -93,7 +94,11 @@ data class ChatResponse(
     val bonusOpportunities: List<String>? = null,
 
     @SerializedName("created_at")
-    val createdAt: String? = null
+    val createdAt: String? = null,
+
+    // Optional - only if your workflow supports these
+    @SerializedName("response_message")
+    val responseMessage: String? = null
 )
 
 data class PointsBreakdown(

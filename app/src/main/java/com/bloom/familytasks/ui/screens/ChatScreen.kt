@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.bloom.familytasks.data.models.ChatMessage
 import com.bloom.familytasks.data.models.MessageType
+import com.bloom.familytasks.utils.ChatUtils.formatTimestamp
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -170,9 +171,4 @@ fun ChatMessageItem(
             }
         }
     }
-}
-
-fun formatTimestamp(timestamp: Long): String {
-    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return sdf.format(Date(timestamp))
 }

@@ -1,5 +1,10 @@
+// app/src/main/java/com/bloom/familytasks/ui/screens/UpdatedParentScreen.kt
 package com.bloom.familytasks.ui.screens
 
+import android.net.Uri
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -10,19 +15,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bloom.familytasks.data.ChoreRepository
 import com.bloom.familytasks.data.models.Chore
 import com.bloom.familytasks.data.models.ChoreCategory
-import com.bloom.familytasks.repository.ApiStatus
+import com.bloom.familytasks.data.models.MessageType
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
-import androidx.compose.runtime.LaunchedEffect
-import kotlinx.coroutines.delay
-import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalContext
+import com.bloom.familytasks.ui.components.BottomChatBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -36,20 +37,31 @@ fun UpdatedParentScreen(
     var showAssignDialog by remember { mutableStateOf(false) }
     var selectedChore by remember { mutableStateOf<Chore?>(null) }
 
+    // Chat input state
+    var chatMessage by remember { mutableStateOf("") }
+    var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
     val context = LocalContext.current
+
+    // Image picker for chat
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        selectedImages = uris.take(3)
+    }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text("Parent Dashboard") },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateHome) {  // Add home navigation
+                    IconButton(onClick = onNavigateHome) {
                         Icon(Icons.Default.Home, contentDescription = "Home")
                     }
                 },
                 actions = {
                     IconButton(onClick = onNavigateToChat) {
-                        Icon(Icons.Default.Chat, contentDescription = "Chat")
+                        Icon(Icons.Default.Chat, contentDescription = "Full Chat")
                     }
                     IconButton(onClick = onNavigateToValidation) {
                         Icon(Icons.Default.CheckCircle, contentDescription = "Validations")
@@ -57,102 +69,140 @@ fun UpdatedParentScreen(
                 }
             )
         }
-    ){ paddingValues ->
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Category selector
-            LazyRow(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            // Main content area
+            Column(
+                modifier = Modifier.weight(1f)
             ) {
-                items(ChoreCategory.values().toList()) { category ->
-                    FilterChip(
-                        selected = selectedCategory == category,
-                        onClick = { selectedCategory = category },
-                        label = {
-                            Text(category.name.lowercase().replaceFirstChar { it.uppercase() })
-                        }
-                    )
-                }
-            }
-
-            // Chores list
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val filteredChores = ChoreRepository.predefinedChores.filter {
-                    it.category == selectedCategory
-                }
-
-                if (filteredChores.isEmpty()) {
-                    item {
-                        Card(
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                "No tasks in this category",
-                                modifier = Modifier.padding(16.dp),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
+                // Category selector
+                LazyRow(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(ChoreCategory.values().toList().filter { it != ChoreCategory.CUSTOM }) { category ->
+                        FilterChip(
+                            selected = selectedCategory == category,
+                            onClick = { selectedCategory = category },
+                            label = {
+                                Text(category.name.lowercase().replaceFirstChar { it.uppercase() })
+                            }
+                        )
                     }
-                } else {
-                    items(filteredChores) { chore ->
-                        Card(
-                            onClick = {
-                                selectedChore = chore
-                                showAssignDialog = true
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
+                }
+
+                // Chores list
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val filteredChores = ChoreRepository.predefinedChores.filter {
+                        it.category == selectedCategory
+                    }
+
+                    if (filteredChores.isEmpty()) {
+                        item {
+                            Card(
+                                modifier = Modifier.fillMaxWidth()
                             ) {
-                                Icon(
-                                    imageVector = chore.icon,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(40.dp),
-                                    tint = MaterialTheme.colorScheme.primary
+                                Text(
+                                    "No tasks in this category",
+                                    modifier = Modifier.padding(16.dp),
+                                    style = MaterialTheme.typography.bodyLarge
                                 )
+                            }
+                        }
+                    } else {
+                        items(filteredChores) { chore ->
+                            Card(
+                                onClick = {
+                                    selectedChore = chore
+                                    showAssignDialog = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = chore.icon,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(40.dp),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
 
-                                Spacer(modifier = Modifier.width(16.dp))
+                                    Spacer(modifier = Modifier.width(16.dp))
 
-                                Column(modifier = Modifier.weight(1f)) {
+                                    Column(modifier = Modifier.weight(1f)) {
+                                        Text(
+                                            text = chore.name,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = chore.description,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+
                                     Text(
-                                        text = chore.name,
+                                        text = "$${chore.points}",
                                         style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.primary,
                                         fontWeight = FontWeight.Bold
                                     )
-                                    Text(
-                                        text = chore.description,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
                                 }
-
-                                Text(
-                                    text = "$${chore.points}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Bold
-                                )
                             }
                         }
                     }
                 }
             }
+
+            // Bottom chat bar
+            BottomChatBar(
+                message = chatMessage,
+                onMessageChange = { chatMessage = it },
+                selectedImages = selectedImages,
+                onImagesSelected = { selectedImages = it },
+                onImagePickerClick = { imagePickerLauncher.launch("image/*") },
+                onSendClick = {
+                    if (chatMessage.isNotBlank()) {
+                        // Determine if this is a custom chore request or general message
+                        if (chatMessage.contains("chore", ignoreCase = true) ||
+                            chatMessage.contains("task", ignoreCase = true) ||
+                            chatMessage.contains("clean", ignoreCase = true) ||
+                            chatMessage.contains("organize", ignoreCase = true)) {
+                            // Send as custom chore request - FIXED: pass childName
+                            viewModel.sendCustomChoreRequest(chatMessage, "Johnny")
+                            Toast.makeText(context, "Custom chore sent to Johnny!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            // Send as general message
+                            viewModel.sendChatMessage(
+                                message = chatMessage,
+                                messageType = MessageType.GENERAL,
+                                images = selectedImages
+                            )
+                        }
+
+                        chatMessage = ""
+                        selectedImages = emptyList()
+                    }
+                },
+                placeholderText = "Send custom chore or message to Johnny..."
+            )
         }
     }
 
-    // Assign dialog remains the same
+    // Assign predefined chore dialog
     if (showAssignDialog) {
         AlertDialog(
             onDismissRequest = { showAssignDialog = false },
@@ -180,7 +230,6 @@ fun UpdatedParentScreen(
                             ).show()
                         }
                         showAssignDialog = false
-                        onNavigateHome()  // Navigate immediately
                     }
                 ) {
                     Text("Assign to Johnny")
@@ -193,166 +242,4 @@ fun UpdatedParentScreen(
             }
         )
     }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EnhancedChoreCard(
-    chore: Chore,
-    onAssign: () -> Unit,
-    isLoading: Boolean
-) {
-    Card(
-        onClick = { if (!isLoading) onAssign() },
-        modifier = Modifier.fillMaxWidth(),
-        enabled = !isLoading
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = chore.icon,
-                contentDescription = null,
-                modifier = Modifier.size(40.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = chore.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = chore.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            AssistChip(
-                onClick = { },
-                label = { Text("$${chore.points}") }
-            )
-        }
-    }
-}
-
-@Composable
-fun N8nAssignChoreDialog(
-    chore: Chore?,
-    onDismiss: () -> Unit,
-    onAssign: (String) -> Unit,
-    isLoading: Boolean
-) {
-    // Only Johnny as child - no selection needed
-    val childName = "Johnny"
-
-    AlertDialog(
-        onDismissRequest = { if (!isLoading) onDismiss() },
-        icon = {
-            Icon(Icons.Default.AutoAwesome, contentDescription = null)
-        },
-        title = {
-            Column {
-                Text("Assign ${chore?.name}")
-                Text(
-                    "AI will create detailed steps for Johnny",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        text = {
-            Column {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            Icons.Default.Face,
-                            contentDescription = null,
-                            modifier = Modifier.size(32.dp)
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                "Assigning to:",
-                                style = MaterialTheme.typography.labelMedium
-                            )
-                            Text(
-                                "Johnny",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    "Task will be sent to n8n workflow for AI processing",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
-                if (isLoading) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Creating AI-enhanced task for Johnny...")
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onAssign(childName)  // Always assign to Johnny
-                },
-                enabled = !isLoading
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                } else {
-                    Text("Assign to Johnny")
-                }
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                enabled = !isLoading
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
 }

@@ -1,3 +1,4 @@
+// app/src/main/java/com/bloom/familytasks/repository/TaskRepository.kt
 package com.bloom.familytasks.repository
 
 import android.content.Context
@@ -5,6 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
+import android.util.Log
+import androidx.compose.material.icons.filled.Assignment
 import com.bloom.familytasks.data.models.*
 import com.bloom.familytasks.network.*
 import com.google.gson.Gson
@@ -12,9 +15,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
-import android.util.Log
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 
 class TaskRepository(private val context: Context) {
     private val apiService = NetworkModule.apiService
@@ -29,6 +31,141 @@ class TaskRepository(private val context: Context) {
     private val _apiStatus = MutableStateFlow<ApiStatus>(ApiStatus.Idle)
     val apiStatus: StateFlow<ApiStatus> = _apiStatus
 
+    // TEMPORARY: Simple local custom chore creation (bypasses n8n for now)
+    suspend fun sendCustomChoreRequest(
+        customChoreDescription: String,
+        senderName: String,
+        childName: String
+    ): Result<ChatMessage> = withContext(Dispatchers.IO) {
+        try {
+            _apiStatus.value = ApiStatus.Loading
+
+            Log.d("TaskRepository", "Creating local custom chore: $customChoreDescription")
+
+            // Create a custom chore locally (no API call)
+            val customChore = Chore(
+                id = System.currentTimeMillis().toInt(),
+                name = extractChoreTitle(customChoreDescription),
+                description = customChoreDescription,
+                icon = androidx.compose.material.icons.Icons.Default.Assignment,
+                points = 5, // Default points for custom chores
+                category = ChoreCategory.CUSTOM,
+                isCustom = true,
+                createdBy = senderName
+            )
+
+            val assignment = ChoreAssignment(
+                id = "custom_${System.currentTimeMillis()}",
+                chore = customChore,
+                assignedTo = childName,
+                assignedBy = senderName,
+                status = TaskStatus.PENDING,
+                comments = "Custom chore created via chat"
+            )
+
+            _taskAssignments.value = _taskAssignments.value + assignment
+
+            // Create chat messages
+            val requestMessage = ChatMessage(
+                sender = senderName,
+                content = customChoreDescription,
+                messageType = MessageType.CUSTOM_CHORE_REQUEST
+            )
+
+            val responseMessage = ChatMessage(
+                sender = "Task System",
+                content = "✅ Custom chore created for $childName: ${customChore.name}\n\n📝 ${customChore.description}\n\n🏆 Points: ${customChore.points}",
+                messageType = MessageType.TASK_ASSIGNMENT,
+                relatedTaskId = assignment.id
+            )
+
+            _chatMessages.value = _chatMessages.value + listOf(requestMessage, responseMessage)
+
+            _apiStatus.value = ApiStatus.Success
+            return@withContext Result.success(responseMessage)
+
+        } catch (e: Exception) {
+            Log.e("TaskRepository", "Error creating custom chore: ${e.message}", e)
+            _apiStatus.value = ApiStatus.Error(e.message ?: "Unknown error")
+            Result.failure(e)
+        }
+    }
+
+    // Helper function to extract a title from the description
+    private fun extractChoreTitle(description: String): String {
+        return when {
+            description.length <= 30 -> description
+            description.contains("clean", ignoreCase = true) -> "Clean ${extractTarget(description)}"
+            description.contains("organize", ignoreCase = true) -> "Organize ${extractTarget(description)}"
+            description.contains("prep", ignoreCase = true) -> "Prep ${extractTarget(description)}"
+            description.contains("help", ignoreCase = true) -> "Help with ${extractTarget(description)}"
+            else -> description.split(" ").take(4).joinToString(" ")
+        }
+    }
+
+    private fun extractTarget(description: String): String {
+        val words = description.lowercase().split(" ")
+        val targets = listOf("room", "kitchen", "bathroom", "bedroom", "living room", "playroom", "toys", "clothes", "dishes", "homework", "college", "school", "work")
+
+        for (target in targets) {
+            if (description.contains(target, ignoreCase = true)) {
+                return target
+            }
+        }
+
+        return "task"
+    }
+
+    // SIMPLIFIED: Send general chat message (local only for now)
+    suspend fun sendChatMessage(
+        message: String,
+        senderName: String,
+        messageType: MessageType = MessageType.GENERAL,
+        relatedTaskId: String? = null,
+        images: List<Uri> = emptyList()
+    ): Result<ChatMessage> = withContext(Dispatchers.IO) {
+        try {
+            _apiStatus.value = ApiStatus.Loading
+
+            // Create the message locally
+            val chatMessage = ChatMessage(
+                sender = senderName,
+                content = message,
+                messageType = messageType,
+                relatedTaskId = relatedTaskId,
+                images = images.map { it.toString() }
+            )
+
+            _chatMessages.value = _chatMessages.value + chatMessage
+
+            // Simple auto-response for different message types
+            val autoResponse = when (messageType) {
+                MessageType.HELP_REQUEST -> "I'll help you with that! What specifically do you need help with?"
+                MessageType.CHORE_QUESTION -> "That's a great question! Let me help you understand."
+                MessageType.CHORE_SUGGESTION -> "Thanks for the suggestion! I'll consider adding that as a chore."
+                else -> null
+            }
+
+            autoResponse?.let { response ->
+                val responseMessage = ChatMessage(
+                    sender = "Assistant",
+                    content = response,
+                    messageType = MessageType.GENERAL,
+                    relatedTaskId = relatedTaskId
+                )
+                _chatMessages.value = _chatMessages.value + responseMessage
+            }
+
+            _apiStatus.value = ApiStatus.Success
+            return@withContext Result.success(chatMessage)
+
+        } catch (e: Exception) {
+            _apiStatus.value = ApiStatus.Error(e.message ?: "Unknown error")
+            Result.failure(e)
+        }
+    }
+
+    // Keep your existing working method for predefined chores
     suspend fun sendParentTaskRequest(
         chore: Chore,
         childName: String,
@@ -54,46 +191,44 @@ class TaskRepository(private val context: Context) {
             )
 
             if (response.isSuccessful) {
-                val taskResponse = response.body()
                 val rawResponse = response.body()?.string() ?: "No Body"
-
-                Log.d("TaskReposiroty", "Raw response: $rawResponse")
-                Log.d("TaskReposiroty", "Parsed response: $taskResponse")
+                Log.d("TaskRepository", "Raw response: $rawResponse")
 
                 val jsonResponse = JSONObject(gson.fromJson(rawResponse, Map::class.java))
+                val cleanResponse = cleanJsonString(jsonResponse.getString("output"))
+                val chatResponse = gson.fromJson(cleanResponse, ChatResponse::class.java)
 
-                val response = cleanJsonString(jsonResponse.getString("output"))
-                Log.d("TaskReposiroty", "Raw response: json task_id " + response)
-                val chatResponse = gson.fromJson(response, ChatResponse::class.java)
-                Log.d("TaskReposiroty", "response task id"+ chatResponse.taskId)
                 val assignment = ChoreAssignment(
                     id = chatResponse.taskId.toString(),
                     chore = chore,
                     assignedTo = chatResponse.childName.toString(),
                     assignedBy = parentId,
                     status = TaskStatus.PENDING,
-                    comments = chatResponse.checklist.toString()
+                    comments = chatResponse.checklist?.joinToString("\n") ?: ""
                 )
 
-                    _taskAssignments.value = _taskAssignments.value + assignment
+                _taskAssignments.value = _taskAssignments.value + assignment
 
-                    // Add to chat
-                    val message = ChatMessage(
-                        sender = "Task Agent",
-                        content = buildString {
-                            append("📋 New Task: \n\n" + chatResponse.taskId)
-                            append(chatResponse.description)
+                // Add to chat
+                val message = ChatMessage(
+                    sender = "Task Agent",
+                    content = buildString {
+                        append("📋 New Task: ${chatResponse.title}\n\n")
+                        append("${chatResponse.description}\n\n")
+                        chatResponse.checklist?.let { checklist ->
                             append("✅ Checklist:\n")
-                            append(chatResponse.checklist)
-                            append("\n🏆 Points Available: " + chatResponse.pointsAvailable)
-                        },
-                        messageType = MessageType.TASK_ASSIGNMENT
-                    )
-                    _chatMessages.value = _chatMessages.value + message
+                            checklist.forEach { item -> append("• $item\n") }
+                        }
+                        append("\n🏆 Points Available: ${chatResponse.pointsAvailable?.totalPossible ?: chore.points}")
+                    },
+                    messageType = MessageType.TASK_ASSIGNMENT,
+                    relatedTaskId = assignment.id
+                )
+                _chatMessages.value = _chatMessages.value + message
 
-                    _apiStatus.value = ApiStatus.Success
-                    return@withContext Result.success(assignment)
-                }
+                _apiStatus.value = ApiStatus.Success
+                return@withContext Result.success(assignment)
+            }
 
             _apiStatus.value = ApiStatus.Error("Failed to create task")
             Result.failure(Exception("Failed to create task"))
@@ -103,6 +238,7 @@ class TaskRepository(private val context: Context) {
         }
     }
 
+    // Keep existing methods unchanged
     suspend fun submitTaskWithImages(
         assignmentId: String,
         childId: String,
@@ -115,7 +251,6 @@ class TaskRepository(private val context: Context) {
             val assignment = _taskAssignments.value.find { it.id == assignmentId }
                 ?: return@withContext Result.failure(Exception("Assignment not found"))
 
-            // Convert images to base64
             val imageAttachments = imageUris.map { uri ->
                 convertUriToBase64(uri)
             }
@@ -138,10 +273,6 @@ class TaskRepository(private val context: Context) {
             )
 
             if (response.isSuccessful) {
-                // Parse validation response from the workflow
-                val responseBody = response.body()
-
-                // Update assignment status
                 val updatedAssignment = assignment.copy(
                     status = TaskStatus.VALIDATED,
                     validationImages = imageUris.map { it.toString() }
@@ -151,15 +282,15 @@ class TaskRepository(private val context: Context) {
                     if (a.id == assignmentId) updatedAssignment else a
                 }
 
-                // Add validation result to chat
                 val message = ChatMessage(
                     sender = "Validation Agent",
                     content = buildString {
                         append("✨ Task Validated!\n\n")
                         append("Great job completing the task!\n")
-                        append("Points earned: Check with parent for exact points")
+                        append("Points earned: ${assignment.chore.points}")
                     },
-                    messageType = MessageType.VALIDATION_RESULT
+                    messageType = MessageType.VALIDATION_RESULT,
+                    relatedTaskId = assignmentId
                 )
                 _chatMessages.value = _chatMessages.value + message
 
@@ -191,15 +322,12 @@ class TaskRepository(private val context: Context) {
 
     private fun cleanJsonString(jsonString: String): String {
         var cleanedJson = jsonString.trim()
-
-        // Remove markdown code block formatting if present
         if (cleanedJson.startsWith("```json")) {
             cleanedJson = cleanedJson.substring(7)
         }
         if (cleanedJson.endsWith("```")) {
             cleanedJson = cleanedJson.substring(0, cleanedJson.length - 3)
         }
-
         return cleanedJson.trim()
     }
 
@@ -232,6 +360,13 @@ class TaskRepository(private val context: Context) {
         _chatMessages.value = _chatMessages.value + message
     }
 
+    fun getMessagesForTask(taskId: String): List<ChatMessage> {
+        return _chatMessages.value.filter { it.relatedTaskId == taskId }
+    }
+
+    fun clearChatMessages() {
+        _chatMessages.value = emptyList()
+    }
 }
 
 sealed class ApiStatus {
