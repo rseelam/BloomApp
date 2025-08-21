@@ -552,6 +552,10 @@ class TaskRepository(private val context: Context) {
     fun clearChatMessages() {
         _chatMessages.value = emptyList()
     }
+
+    fun resetApiStatus() {
+        _apiStatus.value = ApiStatus.Idle
+    }
 }
 
 sealed class ApiStatus {

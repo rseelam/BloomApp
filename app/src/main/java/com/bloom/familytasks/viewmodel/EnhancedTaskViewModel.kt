@@ -51,7 +51,8 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         chore: Chore? = null,
         customDescription: String? = null,
         childName: String = "Johnny",
-        isVoiceInput: Boolean = false
+        isVoiceInput: Boolean = false,
+        onSuccess: ((String) -> Unit)? = null
     ) {
         viewModelScope.launch {
             repository.sendChoreToN8n(
@@ -355,4 +356,11 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
             stopVoiceRecording()
         }
     }
+
+    fun resetApiStatus() {
+        viewModelScope.launch {
+            repository.resetApiStatus()
+        }
+    }
+
 }
