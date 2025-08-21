@@ -1,10 +1,7 @@
 // app/src/main/java/com/bloom/familytasks/ui/screens/UpdatedParentScreen.kt
 package com.bloom.familytasks.ui.screens
 
-import android.net.Uri
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,7 +20,7 @@ import com.bloom.familytasks.data.models.Chore
 import com.bloom.familytasks.data.models.ChoreCategory
 import com.bloom.familytasks.data.models.MessageType
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
-import com.bloom.familytasks.ui.components.BottomChatBar
+import com.bloom.familytasks.ui.components.ParentChatBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,16 +36,8 @@ fun UpdatedParentScreen(
 
     // Chat input state
     var chatMessage by remember { mutableStateOf("") }
-    var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
 
     val context = LocalContext.current
-
-    // Image picker for chat
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    ) { uris: List<Uri> ->
-        selectedImages = uris.take(3)
-    }
 
     Scaffold(
         topBar = {
@@ -167,37 +156,51 @@ fun UpdatedParentScreen(
                 }
             }
 
-            // Bottom chat bar
-            BottomChatBar(
+            // Get voice recording state
+            val isRecording by viewModel.isRecording.collectAsState()
+
+            // Parent chat bar without image picker
+            ParentChatBar(
                 message = chatMessage,
                 onMessageChange = { chatMessage = it },
-                selectedImages = selectedImages,
-                onImagesSelected = { selectedImages = it },
-                onImagePickerClick = { imagePickerLauncher.launch("image/*") },
                 onSendClick = {
-                    if (chatMessage.isNotBlank()) {
+                    if (isRecording) {
+                        // Stop recording and send voice transcription
+                        viewModel.stopVoiceRecording()
+                        Toast.makeText(context, "Processing voice command...", Toast.LENGTH_SHORT).show()
+                    } else if (chatMessage.isNotBlank()) {
                         // Determine if this is a custom chore request or general message
                         if (chatMessage.contains("chore", ignoreCase = true) ||
                             chatMessage.contains("task", ignoreCase = true) ||
                             chatMessage.contains("clean", ignoreCase = true) ||
                             chatMessage.contains("organize", ignoreCase = true)) {
-                            // Send as custom chore request - FIXED: pass childName
-                            viewModel.sendCustomChoreRequest(chatMessage, "Johnny")
-                            Toast.makeText(context, "Custom chore sent to Johnny!", Toast.LENGTH_SHORT).show()
+                            // Send as custom chore request with n8n integration
+                            viewModel.sendCustomChoreRequestToN8n(chatMessage, "Johnny")
+                            Toast.makeText(context, "Sending custom chore to AI...", Toast.LENGTH_SHORT).show()
                         } else {
                             // Send as general message
                             viewModel.sendChatMessage(
                                 message = chatMessage,
                                 messageType = MessageType.GENERAL,
-                                images = selectedImages
+                                images = emptyList()
                             )
                         }
 
                         chatMessage = ""
-                        selectedImages = emptyList()
                     }
                 },
-                placeholderText = "Send custom chore or message to Johnny..."
+                onVoiceClick = {
+                    // Toggle voice recording
+                    if (isRecording) {
+                        viewModel.stopVoiceRecording()
+                        Toast.makeText(context, "Voice recording stopped", Toast.LENGTH_SHORT).show()
+                    } else {
+                        viewModel.startVoiceRecording()
+                        Toast.makeText(context, "Voice recording started", Toast.LENGTH_SHORT).show()
+                    }
+                },
+                placeholderText = "Send custom chore or message to Johnny...",
+                isRecording = isRecording
             )
         }
     }

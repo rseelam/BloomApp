@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assignment
 import com.bloom.familytasks.data.models.*
 import com.bloom.familytasks.network.*
@@ -31,24 +32,158 @@ class TaskRepository(private val context: Context) {
     private val _apiStatus = MutableStateFlow<ApiStatus>(ApiStatus.Idle)
     val apiStatus: StateFlow<ApiStatus> = _apiStatus
 
-    // TEMPORARY: Simple local custom chore creation (bypasses n8n for now)
-    suspend fun sendCustomChoreRequest(
+    // UPDATED: Custom chore creation WITH n8n API integration
+    suspend fun sendCustomChoreRequestToN8n(
         customChoreDescription: String,
         senderName: String,
-        childName: String
+        childName: String,
+        isVoiceInput: Boolean = false
     ): Result<ChatMessage> = withContext(Dispatchers.IO) {
         try {
             _apiStatus.value = ApiStatus.Loading
 
-            Log.d("TaskRepository", "Creating local custom chore: $customChoreDescription")
+            Log.d("TaskRepository", "Sending custom chore to n8n: $customChoreDescription")
 
-            // Create a custom chore locally (no API call)
+            // Prepare the request for n8n with special formatting for custom chores
+            val chatInputData = ChatInputData(
+                message = "CUSTOM_CHORE_REQUEST: $customChoreDescription",
+                senderId = "parent_${senderName.lowercase()}",
+                childName = childName,
+                taskId = "custom_${System.currentTimeMillis()}",
+                parentTaskMessage = if (isVoiceInput) {
+                    "Voice Input: $customChoreDescription"
+                } else {
+                    customChoreDescription
+                }
+            )
+
+            val request = ChatRequest(
+                chatInput = gson.toJson(chatInputData)
+            )
+
+            // Call n8n API
+            val response = apiService.sendChatMessage(
+                webhookId = NetworkModule.WEBHOOK_ID,
+                request = request
+            )
+
+            if (response.isSuccessful) {
+                val rawResponse = response.body()?.string() ?: "{}"
+                Log.d("TaskRepository", "n8n response: $rawResponse")
+
+                // Parse the n8n response
+                val jsonResponse = JSONObject(gson.fromJson(rawResponse, Map::class.java))
+                val cleanResponse = cleanJsonString(jsonResponse.optString("output", "{}"))
+                val chatResponse = gson.fromJson(cleanResponse, ChatResponse::class.java)
+
+                // Create a custom chore from the n8n response
+                val customChore = Chore(
+                    id = System.currentTimeMillis().toInt(),
+                    name = chatResponse.title ?: extractChoreTitle(customChoreDescription),
+                    description = chatResponse.description ?: customChoreDescription,
+                    icon = Icons.Default.Assignment,
+                    points = chatResponse.pointsAvailable?.totalPossible ?: 5,
+                    category = ChoreCategory.CUSTOM,
+                    isCustom = true,
+                    createdBy = senderName
+                )
+
+                val assignment = ChoreAssignment(
+                    id = chatResponse.taskId ?: "custom_${System.currentTimeMillis()}",
+                    chore = customChore,
+                    assignedTo = childName,
+                    assignedBy = senderName,
+                    status = TaskStatus.PENDING,
+                    comments = buildString {
+                        chatResponse.checklist?.forEach { item ->
+                            append("• $item\n")
+                        }
+                        if (chatResponse.safetyReminders?.isNotEmpty() == true) {
+                            append("\n⚠️ Safety:\n")
+                            chatResponse.safetyReminders.forEach { reminder ->
+                                append("• $reminder\n")
+                            }
+                        }
+                        if (isVoiceInput) {
+                            append("\n🎤 Created via voice command")
+                        }
+                    }
+                )
+
+                _taskAssignments.value = _taskAssignments.value + assignment
+
+                // Create chat messages
+                val requestMessage = ChatMessage(
+                    sender = senderName,
+                    content = if (isVoiceInput) "🎤 Voice: $customChoreDescription" else customChoreDescription,
+                    messageType = MessageType.CUSTOM_CHORE_REQUEST
+                )
+
+                val responseMessage = ChatMessage(
+                    sender = "AI Task Agent",
+                    content = buildString {
+                        append("✨ Custom chore created with AI assistance!\n\n")
+                        append("📋 **${chatResponse.title}**\n\n")
+                        append("${chatResponse.description}\n\n")
+
+                        if (!chatResponse.checklist.isNullOrEmpty()) {
+                            append("✅ **Steps to Complete:**\n")
+                            chatResponse.checklist.forEach { item ->
+                                append("• $item\n")
+                            }
+                            append("\n")
+                        }
+
+                        if (!chatResponse.photoGuidance.isNullOrEmpty()) {
+                            append("📸 **Photo Requirements:**\n")
+                            chatResponse.photoGuidance.forEach { guidance ->
+                                append("• $guidance\n")
+                            }
+                            append("\n")
+                        }
+
+                        append("🏆 **Points Available:** ${chatResponse.pointsAvailable?.totalPossible ?: customChore.points}\n")
+
+                        if (!chatResponse.encouragementMessage.isNullOrEmpty()) {
+                            append("\n💪 ${chatResponse.encouragementMessage}")
+                        }
+                    },
+                    messageType = MessageType.TASK_ASSIGNMENT,
+                    relatedTaskId = assignment.id
+                )
+
+                _chatMessages.value = _chatMessages.value + listOf(requestMessage, responseMessage)
+
+                _apiStatus.value = ApiStatus.Success
+                return@withContext Result.success(responseMessage)
+
+            } else {
+                // If n8n fails, fallback to local creation with a warning
+                Log.e("TaskRepository", "n8n API failed, falling back to local creation")
+                return@withContext createLocalCustomChore(customChoreDescription, senderName, childName, isVoiceInput)
+            }
+
+        } catch (e: Exception) {
+            Log.e("TaskRepository", "Error calling n8n API: ${e.message}", e)
+            // Fallback to local creation
+            return@withContext createLocalCustomChore(customChoreDescription, senderName, childName, isVoiceInput)
+        }
+    }
+
+    // Fallback method for local custom chore creation
+    private suspend fun createLocalCustomChore(
+        customChoreDescription: String,
+        senderName: String,
+        childName: String,
+        isVoiceInput: Boolean
+    ): Result<ChatMessage> {
+        try {
             val customChore = Chore(
                 id = System.currentTimeMillis().toInt(),
                 name = extractChoreTitle(customChoreDescription),
                 description = customChoreDescription,
-                icon = androidx.compose.material.icons.Icons.Default.Assignment,
-                points = 5, // Default points for custom chores
+                icon = Icons.Default.Assignment,
+                points = 5,
                 category = ChoreCategory.CUSTOM,
                 isCustom = true,
                 createdBy = senderName
@@ -60,34 +195,25 @@ class TaskRepository(private val context: Context) {
                 assignedTo = childName,
                 assignedBy = senderName,
                 status = TaskStatus.PENDING,
-                comments = "Custom chore created via chat"
+                comments = if (isVoiceInput) "Created via voice command (offline mode)" else "Custom chore (offline mode)"
             )
 
             _taskAssignments.value = _taskAssignments.value + assignment
 
-            // Create chat messages
-            val requestMessage = ChatMessage(
-                sender = senderName,
-                content = customChoreDescription,
-                messageType = MessageType.CUSTOM_CHORE_REQUEST
-            )
-
             val responseMessage = ChatMessage(
                 sender = "Task System",
-                content = "✅ Custom chore created for $childName: ${customChore.name}\n\n📝 ${customChore.description}\n\n🏆 Points: ${customChore.points}",
+                content = "✅ Custom chore created (offline): ${customChore.name}\n\n📝 ${customChore.description}\n\n🏆 Points: ${customChore.points}\n\n⚠️ Note: Created locally due to connection issue",
                 messageType = MessageType.TASK_ASSIGNMENT,
                 relatedTaskId = assignment.id
             )
 
-            _chatMessages.value = _chatMessages.value + listOf(requestMessage, responseMessage)
-
+            _chatMessages.value = _chatMessages.value + responseMessage
             _apiStatus.value = ApiStatus.Success
-            return@withContext Result.success(responseMessage)
 
+            return Result.success(responseMessage)
         } catch (e: Exception) {
-            Log.e("TaskRepository", "Error creating custom chore: ${e.message}", e)
             _apiStatus.value = ApiStatus.Error(e.message ?: "Unknown error")
-            Result.failure(e)
+            return Result.failure(e)
         }
     }
 
@@ -116,7 +242,7 @@ class TaskRepository(private val context: Context) {
         return "task"
     }
 
-    // SIMPLIFIED: Send general chat message (local only for now)
+    // Keep existing methods unchanged
     suspend fun sendChatMessage(
         message: String,
         senderName: String,
@@ -127,7 +253,6 @@ class TaskRepository(private val context: Context) {
         try {
             _apiStatus.value = ApiStatus.Loading
 
-            // Create the message locally
             val chatMessage = ChatMessage(
                 sender = senderName,
                 content = message,
@@ -138,7 +263,6 @@ class TaskRepository(private val context: Context) {
 
             _chatMessages.value = _chatMessages.value + chatMessage
 
-            // Simple auto-response for different message types
             val autoResponse = when (messageType) {
                 MessageType.HELP_REQUEST -> "I'll help you with that! What specifically do you need help with?"
                 MessageType.CHORE_QUESTION -> "That's a great question! Let me help you understand."
@@ -165,12 +289,13 @@ class TaskRepository(private val context: Context) {
         }
     }
 
-    // Keep your existing working method for predefined chores
+    // Keep all other existing methods...
     suspend fun sendParentTaskRequest(
         chore: Chore,
         childName: String,
         parentId: String = "parent_admin"
     ): Result<ChoreAssignment> = withContext(Dispatchers.IO) {
+        // ... keep existing implementation
         try {
             _apiStatus.value = ApiStatus.Loading
 
@@ -209,7 +334,6 @@ class TaskRepository(private val context: Context) {
 
                 _taskAssignments.value = _taskAssignments.value + assignment
 
-                // Add to chat
                 val message = ChatMessage(
                     sender = "Task Agent",
                     content = buildString {
@@ -238,13 +362,25 @@ class TaskRepository(private val context: Context) {
         }
     }
 
-    // Keep existing methods unchanged
+    private fun cleanJsonString(jsonString: String): String {
+        var cleanedJson = jsonString.trim()
+        if (cleanedJson.startsWith("```json")) {
+            cleanedJson = cleanedJson.substring(7)
+        }
+        if (cleanedJson.endsWith("```")) {
+            cleanedJson = cleanedJson.substring(0, cleanedJson.length - 3)
+        }
+        return cleanedJson.trim()
+    }
+
+    // Keep all other existing methods unchanged...
     suspend fun submitTaskWithImages(
         assignmentId: String,
         childId: String,
         imageUris: List<Uri>,
         completionMessage: String
     ): Result<ValidationResponse> = withContext(Dispatchers.IO) {
+        // ... keep existing implementation
         try {
             _apiStatus.value = ApiStatus.Loading
 
@@ -318,17 +454,6 @@ class TaskRepository(private val context: Context) {
             _apiStatus.value = ApiStatus.Error(e.message ?: "Unknown error")
             Result.failure(e)
         }
-    }
-
-    private fun cleanJsonString(jsonString: String): String {
-        var cleanedJson = jsonString.trim()
-        if (cleanedJson.startsWith("```json")) {
-            cleanedJson = cleanedJson.substring(7)
-        }
-        if (cleanedJson.endsWith("```")) {
-            cleanedJson = cleanedJson.substring(0, cleanedJson.length - 3)
-        }
-        return cleanedJson.trim()
     }
 
     private suspend fun convertUriToBase64(uri: Uri): ImageAttachment = withContext(Dispatchers.IO) {
