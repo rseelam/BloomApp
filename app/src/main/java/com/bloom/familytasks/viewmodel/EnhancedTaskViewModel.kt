@@ -5,7 +5,6 @@ import android.app.Application
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
-import android.speech.RecognizerIntent
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -46,19 +45,51 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
     private var mediaRecorder: MediaRecorder? = null
     private var audioFilePath: String? = null
 
-    // NEW: Send custom chore request with n8n integration
-    fun sendCustomChoreRequestToN8n(customChoreDescription: String, childName: String = "Johnny") {
+    // ========== UNIFIED METHOD FOR ALL CHORE ASSIGNMENTS ==========
+
+    fun assignChore(
+        chore: Chore? = null,
+        customDescription: String? = null,
+        childName: String = "Johnny",
+        isVoiceInput: Boolean = false
+    ) {
         viewModelScope.launch {
-            repository.sendCustomChoreRequestToN8n(
-                customChoreDescription = customChoreDescription,
+            repository.sendChoreToN8n(
+                chore = chore,
+                customDescription = customDescription,
                 senderName = currentUser.value,
                 childName = childName,
-                isVoiceInput = false
+                isVoiceInput = isVoiceInput
             )
         }
     }
 
-    // NEW: Start voice recording
+    // ========== CONVENIENCE METHODS FOR UI ==========
+
+    fun assignChoreWithN8n(chore: Chore, childName: String) {
+        assignChore(
+            chore = chore,
+            customDescription = null,
+            childName = childName,
+            isVoiceInput = false
+        )
+    }
+
+    fun sendCustomChoreRequest(customChoreDescription: String, childName: String = "Johnny") {
+        assignChore(
+            chore = null,
+            customDescription = customChoreDescription,
+            childName = childName,
+            isVoiceInput = false
+        )
+    }
+
+    fun sendCustomChoreRequestToN8n(customChoreDescription: String, childName: String = "Johnny") {
+        sendCustomChoreRequest(customChoreDescription, childName)
+    }
+
+    // ========== VOICE RECORDING METHODS ==========
+
     fun startVoiceRecording() {
         if (_isRecording.value) {
             stopVoiceRecording()
@@ -101,7 +132,6 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // NEW: Stop voice recording and process
     fun stopVoiceRecording() {
         if (!_isRecording.value) return
 
@@ -113,7 +143,6 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
             mediaRecorder = null
             _isRecording.value = false
 
-            // Process the audio file
             audioFilePath?.let { path ->
                 processVoiceRecording(path)
             }
@@ -125,54 +154,42 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // Process voice recording - simulate transcription
     private fun processVoiceRecording(audioPath: String) {
         viewModelScope.launch {
             try {
-                // In a real app, you would send this to a speech-to-text service
-                // For now, we'll simulate with a placeholder
+                // In production, send to speech-to-text service
                 val simulatedTranscription = generateSimulatedTranscription()
-
                 _voiceTranscription.value = simulatedTranscription
 
-                // Send as custom chore with voice flag
-                repository.sendCustomChoreRequestToN8n(
-                    customChoreDescription = simulatedTranscription,
-                    senderName = currentUser.value,
+                // Use unified method for voice chores
+                assignChore(
+                    chore = null,
+                    customDescription = simulatedTranscription,
                     childName = "Johnny",
                     isVoiceInput = true
                 )
 
                 // Clean up the audio file
                 File(audioPath).delete()
-
             } catch (e: Exception) {
                 Log.e("VoiceProcessing", "Error processing voice", e)
             }
         }
     }
 
-    // Simulate voice transcription for demo purposes
     private fun generateSimulatedTranscription(): String {
         val sampleChores = listOf(
             "Please clean your room and organize all your toys in the toy box",
             "Help set the table for dinner and put away the clean dishes",
             "Take out the trash and bring the bins back from the curb",
             "Vacuum the living room carpet and tidy up the cushions",
-            "Feed the dog and give him fresh water",
-            "Organize your school backpack and prepare for tomorrow",
-            "Wipe down the bathroom sink and mirror",
-            "Help fold the laundry and put your clothes away"
+            "Feed the dog and give him fresh water"
         )
         return sampleChores.random()
     }
 
-    // KEEP OLD METHOD NAME for backward compatibility
-    fun sendCustomChoreRequest(customChoreDescription: String, childName: String = "Johnny") {
-        sendCustomChoreRequestToN8n(customChoreDescription, childName)
-    }
+    // ========== CHAT AND MESSAGING ==========
 
-    // Send general chat message
     fun sendChatMessage(
         message: String,
         messageType: MessageType = MessageType.GENERAL,
@@ -180,17 +197,32 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         images: List<Uri> = emptyList()
     ) {
         viewModelScope.launch {
-            repository.sendChatMessage(
-                message = message,
-                senderName = currentUser.value,
-                messageType = messageType,
-                relatedTaskId = relatedTaskId,
-                images = images
-            )
+            // Check if this is a custom chore request from parent
+            if (currentUser.value.startsWith("Parent") &&
+                (message.contains("chore", ignoreCase = true) ||
+                        message.contains("task", ignoreCase = true) ||
+                        message.contains("clean", ignoreCase = true) ||
+                        message.contains("organize", ignoreCase = true))) {
+                // Route to custom chore creation
+                assignChore(
+                    chore = null,
+                    customDescription = message,
+                    childName = "Johnny",
+                    isVoiceInput = false
+                )
+            } else {
+                // Regular chat message
+                repository.sendChatMessage(
+                    message = message,
+                    senderName = currentUser.value,
+                    messageType = messageType,
+                    relatedTaskId = relatedTaskId,
+                    images = images
+                )
+            }
         }
     }
 
-    // Send chore question (child asking about task)
     fun sendChoreQuestion(question: String, taskId: String? = null) {
         viewModelScope.launch {
             repository.sendChatMessage(
@@ -202,7 +234,6 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // Send help request
     fun sendHelpRequest(helpMessage: String, taskId: String? = null) {
         viewModelScope.launch {
             repository.sendChatMessage(
@@ -214,7 +245,6 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // Child suggests a chore
     fun suggestChore(suggestion: String) {
         viewModelScope.launch {
             repository.sendChatMessage(
@@ -225,16 +255,7 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // Existing methods...
-    fun assignChoreWithN8n(chore: Chore, childName: String) {
-        viewModelScope.launch {
-            repository.sendParentTaskRequest(
-                chore = chore,
-                childName = childName,
-                parentId = "parent_${currentUser.value.lowercase()}"
-            )
-        }
-    }
+    // ========== TASK SUBMISSION AND VALIDATION ==========
 
     fun submitTaskWithN8n(assignmentId: String, imageUris: List<Uri>, message: String = "Task completed!") {
         viewModelScope.launch {
@@ -246,24 +267,6 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
                 completionMessage = message
             )
         }
-    }
-
-    fun addSelectedImage(uri: Uri) {
-        if (_selectedImages.value.size < 5) {
-            _selectedImages.value = _selectedImages.value + uri
-        }
-    }
-
-    fun removeSelectedImage(uri: Uri) {
-        _selectedImages.value = _selectedImages.value.filter { it != uri }
-    }
-
-    fun clearSelectedImages() {
-        _selectedImages.value = emptyList()
-    }
-
-    fun switchUser(user: String) {
-        _currentUser.value = user
     }
 
     fun validateTask(assignmentId: String, approved: Boolean, comments: String = "") {
@@ -292,7 +295,26 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         }
     }
 
-    // Chat dialog controls
+    // ========== STATE MANAGEMENT ==========
+
+    fun addSelectedImage(uri: Uri) {
+        if (_selectedImages.value.size < 5) {
+            _selectedImages.value = _selectedImages.value + uri
+        }
+    }
+
+    fun removeSelectedImage(uri: Uri) {
+        _selectedImages.value = _selectedImages.value.filter { it != uri }
+    }
+
+    fun clearSelectedImages() {
+        _selectedImages.value = emptyList()
+    }
+
+    fun switchUser(user: String) {
+        _currentUser.value = user
+    }
+
     fun showChatDialog() {
         _showChatDialog.value = true
     }
@@ -306,12 +328,10 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         _currentChatMessage.value = message
     }
 
-    // Get messages for specific task
     fun getMessagesForTask(taskId: String): List<ChatMessage> {
         return repository.getMessagesForTask(taskId)
     }
 
-    // Clear all chat messages
     fun clearAllChatMessages() {
         repository.clearChatMessages()
     }
@@ -331,7 +351,6 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
 
     override fun onCleared() {
         super.onCleared()
-        // Clean up media recorder if still recording
         if (_isRecording.value) {
             stopVoiceRecording()
         }

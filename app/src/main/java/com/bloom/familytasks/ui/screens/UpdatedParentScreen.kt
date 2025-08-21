@@ -169,23 +169,14 @@ fun UpdatedParentScreen(
                         viewModel.stopVoiceRecording()
                         Toast.makeText(context, "Processing voice command...", Toast.LENGTH_SHORT).show()
                     } else if (chatMessage.isNotBlank()) {
-                        // Determine if this is a custom chore request or general message
-                        if (chatMessage.contains("chore", ignoreCase = true) ||
-                            chatMessage.contains("task", ignoreCase = true) ||
-                            chatMessage.contains("clean", ignoreCase = true) ||
-                            chatMessage.contains("organize", ignoreCase = true)) {
-                            // Send as custom chore request with n8n integration
-                            viewModel.sendCustomChoreRequestToN8n(chatMessage, "Johnny")
-                            Toast.makeText(context, "Sending custom chore to AI...", Toast.LENGTH_SHORT).show()
-                        } else {
-                            // Send as general message
-                            viewModel.sendChatMessage(
-                                message = chatMessage,
-                                messageType = MessageType.GENERAL,
-                                images = emptyList()
-                            )
-                        }
-
+                        // Use unified assignChore method
+                        viewModel.assignChore(
+                            chore = null,
+                            customDescription = chatMessage,
+                            childName = "Johnny",
+                            isVoiceInput = false
+                        )
+                        Toast.makeText(context, "Sending chore to AI...", Toast.LENGTH_SHORT).show()
                         chatMessage = ""
                     }
                 },
