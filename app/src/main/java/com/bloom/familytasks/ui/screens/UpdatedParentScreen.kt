@@ -31,11 +31,6 @@ import com.bloom.familytasks.ui.components.ParentChatBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// Banner types enum - defined outside the composable
-private enum class BannerType {
-    Submitted, Success, Error
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdatedParentScreen(
@@ -44,6 +39,8 @@ fun UpdatedParentScreen(
     onNavigateToValidation: () -> Unit,
     onNavigateHome: () -> Unit = {}
 ) {
+    // Banner types enum - defined inside the composable
+
     var selectedCategory by remember { mutableStateOf(ChoreCategory.CLEANING) }
     var showAssignDialog by remember { mutableStateOf(false) }
     var selectedChore by remember { mutableStateOf<Chore?>(null) }
@@ -456,6 +453,56 @@ fun UpdatedParentScreen(
                                     BannerType.Error -> MaterialTheme.colorScheme.onErrorContainer
                                 }
                             )
+
+                            // Show WE BLOOM logo on success
+                            if (bannerType == BannerType.Success) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Note: Replace with your actual image resource
+                                    // For drawable resource:
+                                    // Image(
+                                    //     painter = painterResource(id = R.drawable.bloom_logo),
+                                    //     contentDescription = "WE BLOOM",
+                                    //     modifier = Modifier.height(40.dp)
+                                    // )
+
+                                    // For now, showing a placeholder representation
+                                    Card(
+                                        modifier = Modifier.height(32.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = Color(0xFFFFA726).copy(alpha = 0.2f)
+                                        )
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(
+                                                "WE",
+                                                style = MaterialTheme.typography.labelLarge,
+                                                color = Color(0xFFFFA726),
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Icon(
+                                                Icons.Default.LocalFlorist,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(20.dp),
+                                                tint = Color(0xFF66BB6A)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                "BLOOM",
+                                                style = MaterialTheme.typography.labelLarge,
+                                                color = Color(0xFFFFA726),
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
 
                         IconButton(
