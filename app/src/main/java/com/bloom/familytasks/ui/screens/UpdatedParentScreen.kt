@@ -1,9 +1,14 @@
-// app/src/main/java/com/bloom/familytasks/ui/screens/UpdatedParentScreen.kt
+// Complete UpdatedParentScreen.kt with all imports
 package com.bloom.familytasks.ui.screens
 
+// Android imports
 import android.widget.Toast
+
+// Compose animation imports
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+
+// Compose foundation imports
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -11,10 +16,18 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+
+// Material Icons imports
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+
+// Material3 imports
 import androidx.compose.material3.*
+
+// Compose runtime imports
 import androidx.compose.runtime.*
+
+// Compose UI imports
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,12 +35,19 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+
+// Your app's imports
 import com.bloom.familytasks.data.ChoreRepository
 import com.bloom.familytasks.data.models.Chore
 import com.bloom.familytasks.data.models.ChoreCategory
 import com.bloom.familytasks.data.models.MessageType
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 import com.bloom.familytasks.ui.components.ParentChatBar
+import com.bloom.familytasks.ui.components.SuccessBanner
+import com.bloom.familytasks.ui.components.BannerStateManager
+import com.bloom.familytasks.ui.components.BannerType
+
+// Coroutines
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -39,89 +59,47 @@ fun UpdatedParentScreen(
     onNavigateToValidation: () -> Unit,
     onNavigateHome: () -> Unit = {}
 ) {
-    // Banner types enum - defined inside the composable
-
     var selectedCategory by remember { mutableStateOf(ChoreCategory.CLEANING) }
     var showAssignDialog by remember { mutableStateOf(false) }
     var selectedChore by remember { mutableStateOf<Chore?>(null) }
-
-    // Chat input state
     var chatMessage by remember { mutableStateOf("") }
 
-    // Success banner state
-    var showSuccessBanner by remember { mutableStateOf(false) }
-    var successMessage by remember { mutableStateOf("") }
-    var bannerType by remember { mutableStateOf<BannerType>(BannerType.Submitted) }
-    var lastSuccessTime by remember { mutableStateOf(0L) }
+    // Initialize banner manager
+    val bannerManager = remember { BannerStateManager() }
+    val bannerState by bannerManager.bannerState
 
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
-    // Function to show submitted banner
-    fun showSubmitted(message: String) {
-        successMessage = message
-        bannerType = BannerType.Submitted
-        showSuccessBanner = true
-        lastSuccessTime = System.currentTimeMillis()
-    }
-
-    // Function to show success banner
-    fun showSuccess(message: String) {
-        successMessage = message
-        bannerType = BannerType.Success
-        showSuccessBanner = true
-        lastSuccessTime = System.currentTimeMillis()
-    }
-
-    // Function to show error banner
-    fun showError(message: String) {
-        successMessage = message
-        bannerType = BannerType.Error
-        showSuccessBanner = true
-    }
-
-    // Function to hide banner on any interaction
-    fun hideBanner() {
-        showSuccessBanner = false
-    }
-
-    // Monitor API status for success
+    // Monitor API status
     val apiStatus by viewModel.apiStatus.collectAsState()
     var hasShownSuccessForCurrentStatus by remember { mutableStateOf(false) }
 
     LaunchedEffect(apiStatus) {
         when (apiStatus) {
             is com.bloom.familytasks.repository.ApiStatus.Loading -> {
-                // Don't show submitted here as we'll show it immediately on action
                 hasShownSuccessForCurrentStatus = false
             }
             is com.bloom.familytasks.repository.ApiStatus.Success -> {
-                // Only show success if we haven't shown it for this status yet
-                if (!hasShownSuccessForCurrentStatus && showSuccessBanner) {
-                    // Update the existing banner to success
-                    showSuccess("✅ Success! Chore has been sent to Johnny!")
+                if (!hasShownSuccessForCurrentStatus && bannerState.isVisible) {
+                    bannerManager.showSuccess("✅ Success! Chore has been sent to Johnny!")
                     hasShownSuccessForCurrentStatus = true
                 }
             }
             is com.bloom.familytasks.repository.ApiStatus.Error -> {
-                if (showSuccessBanner) {
-                    showError("❌ Failed to send chore. Please try again.")
+                if (bannerState.isVisible) {
+                    bannerManager.showError("❌ Failed to send chore. Please try again.")
                 }
             }
-            else -> {
-                // For Idle state, don't show banner
-            }
+            else -> {}
         }
     }
 
-    // Clean up when leaving the screen
+    // Clean up when leaving
     DisposableEffect(Unit) {
         onDispose {
-            showSuccessBanner = false
+            bannerManager.hide()
             hasShownSuccessForCurrentStatus = false
-            // Reset API status when leaving the screen
-            // Note: Add resetApiStatus() method to your ViewModel
-            // viewModel.resetApiStatus()
         }
     }
 
@@ -131,7 +109,7 @@ fun UpdatedParentScreen(
                 title = { Text("Parent Dashboard") },
                 navigationIcon = {
                     IconButton(onClick = {
-                        hideBanner()
+                        bannerManager.hide()
                         onNavigateHome()
                     }) {
                         Icon(Icons.Default.Home, contentDescription = "Home")
@@ -139,13 +117,13 @@ fun UpdatedParentScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        hideBanner()
+                        bannerManager.hide()
                         onNavigateToChat()
                     }) {
                         Icon(Icons.Default.Chat, contentDescription = "Full Chat")
                     }
                     IconButton(onClick = {
-                        hideBanner()
+                        bannerManager.hide()
                         onNavigateToValidation()
                     }) {
                         Icon(Icons.Default.CheckCircle, contentDescription = "Validations")
@@ -157,7 +135,7 @@ fun UpdatedParentScreen(
             interactionSource = remember { MutableInteractionSource() },
             indication = null
         ) {
-            hideBanner()
+            bannerManager.hide()
         }
     ) { paddingValues ->
         Box(
@@ -176,7 +154,7 @@ fun UpdatedParentScreen(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
-                            hideBanner()
+                            bannerManager.hide()
                         }
                 ) {
                     // Category selector
@@ -188,7 +166,7 @@ fun UpdatedParentScreen(
                             FilterChip(
                                 selected = selectedCategory == category,
                                 onClick = {
-                                    hideBanner()
+                                    bannerManager.hide()
                                     selectedCategory = category
                                 },
                                 label = {
@@ -224,7 +202,7 @@ fun UpdatedParentScreen(
                             items(filteredChores) { chore ->
                                 Card(
                                     onClick = {
-                                        hideBanner()
+                                        bannerManager.hide()
                                         selectedChore = chore
                                         showAssignDialog = true
                                     },
@@ -278,18 +256,18 @@ fun UpdatedParentScreen(
                 ParentChatBar(
                     message = chatMessage,
                     onMessageChange = {
-                        hideBanner()
+                        bannerManager.hide()
                         chatMessage = it
                     },
                     onSendClick = {
-                        hideBanner()
+                        bannerManager.hide()
                         if (isRecording) {
                             // Stop recording and send voice transcription
                             viewModel.stopVoiceRecording()
-                            showSubmitted("🎤 Voice chore request submitted to Johnny...")
+                            bannerManager.showSubmitted("🎤 Voice chore request submitted to Johnny...")
                         } else if (chatMessage.isNotBlank()) {
                             // Show submitted message immediately
-                            showSubmitted("📝 Sending custom chore to Johnny...")
+                            bannerManager.showSubmitted("📝 Sending custom chore to Johnny...")
                             // Use unified assignChore method
                             viewModel.assignChore(
                                 chore = null,
@@ -301,7 +279,7 @@ fun UpdatedParentScreen(
                         }
                     },
                     onVoiceClick = {
-                        hideBanner()
+                        bannerManager.hide()
                         // Toggle voice recording
                         if (isRecording) {
                             viewModel.stopVoiceRecording()
@@ -315,213 +293,12 @@ fun UpdatedParentScreen(
                 )
             }
 
-            // Success Banner - Overlay at the top
-            AnimatedVisibility(
-                visible = showSuccessBanner,
-                enter = slideInVertically(
-                    initialOffsetY = { -it },
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioMediumBouncy,
-                        stiffness = Spring.StiffnessLow
-                    )
-                ) + fadeIn(),
-                exit = slideOutVertically(
-                    targetOffsetY = { -it },
-                    animationSpec = tween(300)
-                ) + fadeOut(),
+            // Add the reusable success banner
+            SuccessBanner(
+                bannerState = bannerState,
+                onDismiss = { bannerManager.hide() },
                 modifier = Modifier.align(Alignment.TopCenter)
-            ) {
-                val bannerColor = when (bannerType) {
-                    BannerType.Submitted -> MaterialTheme.colorScheme.secondaryContainer
-                    BannerType.Success -> MaterialTheme.colorScheme.primaryContainer
-                    BannerType.Error -> MaterialTheme.colorScheme.errorContainer
-                }
-
-                val bannerIcon = when (bannerType) {
-                    BannerType.Submitted -> Icons.Default.Send
-                    BannerType.Success -> Icons.Default.CheckCircle
-                    BannerType.Error -> Icons.Default.Error
-                }
-
-                val bannerTitle = when (bannerType) {
-                    BannerType.Submitted -> "Submitted"
-                    BannerType.Success -> "Success!"
-                    BannerType.Error -> "Error"
-                }
-
-                val iconTint = when (bannerType) {
-                    BannerType.Submitted -> MaterialTheme.colorScheme.secondary
-                    BannerType.Success -> MaterialTheme.colorScheme.primary
-                    BannerType.Error -> MaterialTheme.colorScheme.error
-                }
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .clickable { hideBanner() },
-                    colors = CardDefaults.cardColors(
-                        containerColor = bannerColor
-                    ),
-                    elevation = CardDefaults.cardElevation(
-                        defaultElevation = 8.dp
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Animated icon
-                        if (bannerType == BannerType.Submitted) {
-                            // Loading animation for submitted state
-                            val infiniteTransition = rememberInfiniteTransition(label = "loading")
-                            val rotation by infiniteTransition.animateFloat(
-                                initialValue = 0f,
-                                targetValue = 360f,
-                                animationSpec = infiniteRepeatable(
-                                    animation = tween(1000, easing = LinearEasing),
-                                    repeatMode = RepeatMode.Restart
-                                ),
-                                label = "rotation"
-                            )
-
-                            Icon(
-                                Icons.Default.Sync,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .graphicsLayer(
-                                        rotationZ = rotation
-                                    ),
-                                tint = iconTint
-                            )
-                        } else if (bannerType == BannerType.Success) {
-                            // Pulsing animation for success
-                            val infiniteTransition = rememberInfiniteTransition(label = "success")
-                            val scale by infiniteTransition.animateFloat(
-                                initialValue = 0.9f,
-                                targetValue = 1.1f,
-                                animationSpec = infiniteRepeatable(
-                                    animation = tween(1000),
-                                    repeatMode = RepeatMode.Reverse
-                                ),
-                                label = "scale"
-                            )
-
-                            Icon(
-                                bannerIcon,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .graphicsLayer(
-                                        scaleX = scale,
-                                        scaleY = scale
-                                    ),
-                                tint = iconTint
-                            )
-                        } else {
-                            // Static icon for error
-                            Icon(
-                                bannerIcon,
-                                contentDescription = null,
-                                modifier = Modifier.size(32.dp),
-                                tint = iconTint
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                bannerTitle,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = when (bannerType) {
-                                    BannerType.Submitted -> MaterialTheme.colorScheme.onSecondaryContainer
-                                    BannerType.Success -> MaterialTheme.colorScheme.onPrimaryContainer
-                                    BannerType.Error -> MaterialTheme.colorScheme.onErrorContainer
-                                }
-                            )
-                            Text(
-                                successMessage,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = when (bannerType) {
-                                    BannerType.Submitted -> MaterialTheme.colorScheme.onSecondaryContainer
-                                    BannerType.Success -> MaterialTheme.colorScheme.onPrimaryContainer
-                                    BannerType.Error -> MaterialTheme.colorScheme.onErrorContainer
-                                }
-                            )
-
-                            // Show WE BLOOM logo on success
-                            if (bannerType == BannerType.Success) {
-                                Spacer(modifier = Modifier.height(8.dp))
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    // Note: Replace with your actual image resource
-                                    // For drawable resource:
-                                    // Image(
-                                    //     painter = painterResource(id = R.drawable.bloom_logo),
-                                    //     contentDescription = "WE BLOOM",
-                                    //     modifier = Modifier.height(40.dp)
-                                    // )
-
-                                    // For now, showing a placeholder representation
-                                    Card(
-                                        modifier = Modifier.height(32.dp),
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = Color(0xFFFFA726).copy(alpha = 0.2f)
-                                        )
-                                    ) {
-                                        Row(
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                "WE",
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = Color(0xFFFFA726),
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Icon(
-                                                Icons.Default.LocalFlorist,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(20.dp),
-                                                tint = Color(0xFF66BB6A)
-                                            )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            Text(
-                                                "BLOOM",
-                                                style = MaterialTheme.typography.labelLarge,
-                                                color = Color(0xFFFFA726),
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        IconButton(
-                            onClick = { hideBanner() },
-                            modifier = Modifier.size(24.dp)
-                        ) {
-                            Icon(
-                                Icons.Default.Close,
-                                contentDescription = "Dismiss",
-                                tint = when (bannerType) {
-                                    BannerType.Submitted -> MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.6f)
-                                    BannerType.Success -> MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
-                                    BannerType.Error -> MaterialTheme.colorScheme.onErrorContainer.copy(alpha = 0.6f)
-                                }
-                            )
-                        }
-                    }
-                }
-            }
+            )
         }
     }
 
@@ -529,7 +306,7 @@ fun UpdatedParentScreen(
     if (showAssignDialog) {
         AlertDialog(
             onDismissRequest = {
-                hideBanner()
+                bannerManager.hide()
                 showAssignDialog = false
             },
             title = { Text("Assign Chore") },
@@ -548,7 +325,7 @@ fun UpdatedParentScreen(
                 Button(
                     onClick = {
                         selectedChore?.let {
-                            showSubmitted("📋 Assigning ${it.name} to Johnny...")
+                            bannerManager.showSubmitted("📋 Assigning ${it.name} to Johnny...")
                             viewModel.assignChoreWithN8n(it, "Johnny")
                         }
                         showAssignDialog = false
@@ -559,7 +336,7 @@ fun UpdatedParentScreen(
             },
             dismissButton = {
                 TextButton(onClick = {
-                    hideBanner()
+                    bannerManager.hide()
                     showAssignDialog = false
                 }) {
                     Text("Cancel")
