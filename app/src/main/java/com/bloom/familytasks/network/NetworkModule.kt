@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 
 object NetworkModule {
     // Update this with your actual n8n webhook URL
-    private const val BASE_URL = "http://192.168.86.33:5678/"
+    private const val BASE_URL = "http://10.128.182.48:5678/"
 
 //    private const val BASE_URL = "http://10.2.250.33:5678/"
 

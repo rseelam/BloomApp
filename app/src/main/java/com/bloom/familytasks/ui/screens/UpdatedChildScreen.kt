@@ -250,7 +250,7 @@ fun UpdatedChildScreen(
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     colors = CardDefaults.cardColors(
-                                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                                        containerColor = Color(0xFFE8F5E9)
                                     )
                                 ) {
                                     Row(
@@ -263,7 +263,8 @@ fun UpdatedChildScreen(
                                             Icons.Default.CheckCircle,
                                             contentDescription = null,
                                             modifier = Modifier.size(32.dp),
-                                            tint = MaterialTheme.colorScheme.tertiary
+                                            tint = Color(0xFF4CAF50)
+//                                            tint = MaterialTheme.colorScheme.tertiary
                                         )
                                         Spacer(modifier = Modifier.width(12.dp))
                                         Column(modifier = Modifier.weight(1f)) {
@@ -277,18 +278,21 @@ fun UpdatedChildScreen(
                                                 Text(
                                                     "Earned ",
                                                     style = MaterialTheme.typography.bodySmall,
-                                                    color = MaterialTheme.colorScheme.tertiary
+                                                    color = Color(0xFF2E7D32)
+//                                                    color = MaterialTheme.colorScheme.tertiary
                                                 )
                                                 Icon(
                                                     Icons.Default.AttachMoney,
                                                     contentDescription = null,
                                                     modifier = Modifier.size(14.dp),
-                                                    tint = MaterialTheme.colorScheme.tertiary
+                                                    tint = Color(0xFF2E7D32)
+//                                                            tint = MaterialTheme.colorScheme.tertiary
                                                 )
                                                 Text(
                                                     "${assignment.chore.points}",
                                                     style = MaterialTheme.typography.bodySmall,
-                                                    color = MaterialTheme.colorScheme.tertiary,
+                                                    color = Color(0xFF2E7D32),
+//                                                    color = MaterialTheme.colorScheme.tertiary,
                                                     fontWeight = FontWeight.Bold
                                                 )
                                             }
