@@ -9,7 +9,7 @@ data class Chore(
     val name: String,
     val description: String,
     val icon: ImageVector,
-    val points: Int = 10,
+    val points: Int = 10,  // Dollar amount reward for completing the chore
     val category: ChoreCategory,
     val isCustom: Boolean = false,
     val createdBy: String? = null

@@ -168,7 +168,7 @@ class TaskRepository(private val context: Context) {
             name = chatResponse.title ?: extractChoreTitle(customDescription ?: "Custom Task"),
             description = chatResponse.description ?: customDescription ?: "Custom task",
             icon = Icons.Default.Assignment,
-            points = chatResponse.pointsAvailable?.totalPossible ?: 5,
+            points = 2,  // Custom chores are also $2
             category = ChoreCategory.CUSTOM,
             isCustom = true,
             createdBy = senderName
@@ -250,7 +250,8 @@ class TaskRepository(private val context: Context) {
                 append("\n")
             }
 
-            append("🏆 **Points Available:** ${chatResponse.pointsAvailable?.totalPossible ?: chore.points}\n")
+            // Show dollar reward instead of points
+            append("💰 **Reward:** $${chore.points}\n")
 
             if (!chatResponse.encouragementMessage.isNullOrEmpty()) {
                 append("\n💪 ${chatResponse.encouragementMessage}")
@@ -273,7 +274,7 @@ class TaskRepository(private val context: Context) {
                 name = extractChoreTitle(customDescription ?: "Custom Task"),
                 description = customDescription ?: "Custom task",
                 icon = Icons.Default.Assignment,
-                points = 5,
+                points = 2,  // Custom chores are also $2
                 category = ChoreCategory.CUSTOM,
                 isCustom = true,
                 createdBy = senderName
@@ -292,7 +293,7 @@ class TaskRepository(private val context: Context) {
 
             val message = ChatMessage(
                 sender = "Task System",
-                content = "✅ Task created (offline): ${finalChore.name}\n\n⚠️ Created locally due to connection issue",
+                content = "✅ Task created (offline): ${finalChore.name}\n\n💰 Reward: $${finalChore.points}\n\n⚠️ Created locally due to connection issue",
                 messageType = MessageType.TASK_ASSIGNMENT,
                 relatedTaskId = assignment.id
             )
@@ -400,7 +401,7 @@ class TaskRepository(private val context: Context) {
                     content = buildString {
                         append("✨ Task Validated!\n\n")
                         append("Great job completing the task!\n")
-                        append("Points earned: ${assignment.chore.points}")
+                        append("Money earned: $${assignment.chore.points}")
                     },
                     messageType = MessageType.VALIDATION_RESULT,
                     relatedTaskId = assignmentId

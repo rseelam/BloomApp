@@ -285,7 +285,7 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
                 val message = ChatMessage(
                     sender = "Validation Agent",
                     content = if (approved)
-                        "Task '${it.chore.name}' has been validated! Great job! 🎉"
+                        "Task '${it.chore.name}' has been validated! Great job! 🎉\n💰 $${it.chore.points} earned!"
                     else
                         "Task '${it.chore.name}' needs more work. $comments",
                     messageType = MessageType.VALIDATION_RESULT,

@@ -87,7 +87,7 @@ data class ChatResponse(
     @SerializedName("difficulty_level")
     val difficultyLevel: String? = null,
 
-    @SerializedName("points_available")
+    @SerializedName("points_available")  // Keep the API field name as is for compatibility
     val pointsAvailable: PointsBreakdown? = null,
 
     @SerializedName("bonus_opportunities")
@@ -101,18 +101,20 @@ data class ChatResponse(
     val responseMessage: String? = null
 )
 
+// This is for the API response - the field names might need to stay the same for compatibility
+// but we interpret them as dollar amounts
 data class PointsBreakdown(
     @SerializedName("base_points")
-    val basePoints: Int,
+    val basePoints: Int,  // Actually dollars
 
     @SerializedName("quality_points")
-    val qualityPoints: Int,
+    val qualityPoints: Int,  // Actually quality bonus dollars
 
     @SerializedName("bonus_points")
-    val bonusPoints: Int,
+    val bonusPoints: Int,  // Actually bonus dollars
 
     @SerializedName("total_possible")
-    val totalPossible: Int
+    val totalPossible: Int  // Actually total dollars
 )
 
 data class ValidationResponse(
@@ -125,8 +127,8 @@ data class ValidationResponse(
     @SerializedName("task_title")
     val taskTitle: String,
 
-    @SerializedName("total_points_earned")
-    val totalPointsEarned: Double,
+    @SerializedName("total_points_earned")  // Keep API field name for compatibility
+    val totalPointsEarned: Double,  // Actually dollars earned
 
     @SerializedName("validation_status")
     val validationStatus: String,

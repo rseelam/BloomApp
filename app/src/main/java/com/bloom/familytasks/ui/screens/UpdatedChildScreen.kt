@@ -1,4 +1,4 @@
-// Complete UpdatedChildScreen.kt with all imports
+// Complete UpdatedChildScreen.kt with dollars instead of points
 package com.bloom.familytasks.ui.screens
 
 // Android imports
@@ -139,14 +139,17 @@ fun UpdatedChildScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            Icons.Default.Stars,
-                            contentDescription = "Points",
-                            modifier = Modifier.size(20.dp)
+                            Icons.Default.AttachMoney,
+                            contentDescription = "Money",
+                            modifier = Modifier.size(20.dp),
+                            tint = Color(0xFF4CAF50)
                         )
                         Text(
                             text = "${myAssignments.filter { it.status == TaskStatus.VALIDATED }.sumOf { it.chore.points }}",
                             style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(end = 16.dp)
+                            modifier = Modifier.padding(end = 16.dp),
+                            color = Color(0xFF4CAF50),
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -268,11 +271,27 @@ fun UpdatedChildScreen(
                                                 text = assignment.chore.name,
                                                 style = MaterialTheme.typography.titleMedium
                                             )
-                                            Text(
-                                                "Earned $${assignment.chore.points}",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.tertiary
-                                            )
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    "Earned ",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.tertiary
+                                                )
+                                                Icon(
+                                                    Icons.Default.AttachMoney,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(14.dp),
+                                                    tint = MaterialTheme.colorScheme.tertiary
+                                                )
+                                                Text(
+                                                    "${assignment.chore.points}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.tertiary,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -364,8 +383,6 @@ fun UpdatedChildScreen(
     }
 }
 
-// The rest of your existing TaskCard and SimplePhotoSubmissionDialog composables remain the same
-
 @Composable
 fun TaskCard(
     assignment: ChoreAssignment,
@@ -410,12 +427,23 @@ fun TaskCard(
                         )
                     }
                 }
-                Text(
-                    "${assignment.chore.points}",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold
-                )
+                // Show dollar amount instead of points
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.AttachMoney,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        "${assignment.chore.points}",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
 
             if (assignment.comments.isNotEmpty()) {
