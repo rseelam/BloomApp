@@ -1,3 +1,4 @@
+// app/src/main/java/com/bloom/familytasks/navigation/Navigation.kt
 package com.bloom.familytasks.navigation
 
 import androidx.compose.foundation.layout.*
@@ -7,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -20,7 +22,6 @@ import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
     val navController = rememberNavController()
 
-    // No bottom tabs - just navigation
     NavHost(
         navController = navController,
         startDestination = "home"
@@ -32,8 +33,11 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
                     navController.navigate("parent")
                 },
                 onChildClick = {
-                    viewModel.switchUser("Johnny")  // Always Johnny
+                    viewModel.switchUser("Johnny")
                     navController.navigate("child")
+                },
+                onSettingsClick = {
+                    navController.navigate("settings")
                 }
             )
         }
@@ -50,8 +54,9 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
         composable("child") {
             UpdatedChildScreen(
                 viewModel = viewModel,
-                childName = "Johnny" , // Always Johnny
-                onNavigateHome = { navController.navigate("home") }
+                childName = "Johnny",
+                onNavigateHome = { navController.navigate("home") },
+                onNavigateToChat = { navController.navigate("chat") }
             )
         }
 
@@ -63,8 +68,14 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
         }
 
         composable("chat") {
-            ChatScreen(
+            EnhancedChatScreen(
                 viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable("settings") {
+            SimpleSettingsScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -74,7 +85,8 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
 @Composable
 fun HomeScreen(
     onParentClick: () -> Unit,
-    onChildClick: () -> Unit
+    onChildClick: () -> Unit,
+    onSettingsClick: () -> Unit  // ADD THIS PARAMETER
 ) {
     Column(
         modifier = Modifier
@@ -93,7 +105,7 @@ fun HomeScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            "Select Your Role",
+            "Chat & Collaborate on Chores",
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -105,7 +117,7 @@ fun HomeScreen(
             onClick = onParentClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp),
+                .height(140.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
             )
@@ -131,8 +143,18 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                     Text(
-                        "Assign chores & view validations",
-                        style = MaterialTheme.typography.bodyMedium,
+                        "• Send custom chores ($2 each)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Assign predefined chores ($1-2)",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Chat directly with Johnny",
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                     )
                 }
@@ -146,7 +168,7 @@ fun HomeScreen(
             onClick = onChildClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(120.dp),
+                .height(140.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer
             )
@@ -172,8 +194,18 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
                     Text(
-                        "View chores & submit photos",
-                        style = MaterialTheme.typography.bodyMedium,
+                        "• Complete tasks to earn money",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Submit photos for validation",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                    )
+                    Text(
+                        "• Track earnings ($1-2 per chore)",
+                        style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
                     )
                 }
@@ -193,18 +225,35 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    Icons.Default.Info,
+                    Icons.Default.AttachMoney,
                     contentDescription = null,
                     modifier = Modifier.size(20.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = Color(0xFF4CAF50)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    "Managing chores for Johnny",
+                    "Earn real money for completing chores!",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontWeight = FontWeight.Medium
                 )
             }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Settings button at the bottom
+        TextButton(
+            onClick = onSettingsClick,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Icon(
+                Icons.Default.Settings,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text("N8N Settings")
         }
     }
 }

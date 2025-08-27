@@ -1,21 +1,60 @@
 package com.bloom.familytasks.network
 
+import android.content.Context
+import android.content.SharedPreferences
+import android.util.Log
 import com.google.gson.GsonBuilder
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object NetworkModule {
-    // Update this with your actual n8n webhook URL
-//    private const val BASE_URL = "http://192.168.86.33:5678/"
+    // Your test environment URL
+    private const val TEST_BASE_URL = "http://172.20.10.10:5678/webhook-test/"
 
-    private const val BASE_URL = "http://10.128.183.87:5678/"
+    // Default production URL (used if not set in preferences)
+    private const val DEFAULT_PROD_BASE_URL = "http://172.20.10.10:5678/webhook-default/"
 
-    const val WEBHOOK_ID = "7ff480c5-aba3-4c64-b8a9-28eefd8fae54"
+    const val WEBHOOK_ID = "aae97eb3-5737-4083-b752-36796abac305"
 
-    const val WEBHOOK_ENDPOINT = "webhook/$WEBHOOK_ID/chat"
+    private const val PREFS_NAME = "n8n_settings"
+    private const val PREF_PROD_URL = "production_url"
+
+    private lateinit var appContext: Context
+    private lateinit var sharedPrefs: SharedPreferences
+
+    // Initialize with application context (call this from your Application class or MainActivity)
+    fun init(context: Context) {
+        appContext = context.applicationContext
+        sharedPrefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
+
+
+
+    // Get production URL from preferences or use default
+    fun getProductionUrl(): String {
+        if (!::sharedPrefs.isInitialized) {
+            Log.w("NetworkModule", "SharedPreferences not initialized, using default production URL")
+            return DEFAULT_PROD_BASE_URL
+        }
+        return sharedPrefs.getString(PREF_PROD_URL, DEFAULT_PROD_BASE_URL) ?: DEFAULT_PROD_BASE_URL
+    }
+
+    // Set production URL in preferences
+    fun setProductionUrl(url: String) {
+        if (!::sharedPrefs.isInitialized) {
+            Log.e("NetworkModule", "Cannot set production URL - SharedPreferences not initialized")
+            return
+        }
+        sharedPrefs.edit().putString(PREF_PROD_URL, url).apply()
+        Log.i("NetworkModule", "Production URL updated to: $url")
+    }
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -32,10 +71,80 @@ object NetworkModule {
         .setLenient()
         .create()
 
-    val apiService: N8nApiService = Retrofit.Builder()
-        .baseUrl(BASE_URL)
+    // Test environment API service
+    private val testApiService: N8nApiService = Retrofit.Builder()
+        .baseUrl(TEST_BASE_URL)
         .client(okHttpClient)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()
         .create(N8nApiService::class.java)
+
+    // Function to create production API service with current URL
+    private fun createProdApiService(): N8nApiService {
+        val prodUrl = getProductionUrl()
+        Log.d("NetworkModule", "Creating production API service with URL: $prodUrl")
+
+        return Retrofit.Builder()
+            .baseUrl(prodUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+            .create(N8nApiService::class.java)
+    }
+
+    // Main API service that handles fallback
+    val apiService: N8nApiService = object : N8nApiService {
+        override suspend fun sendChatMessage(
+            webhookId: String,
+            request: ChatRequest
+        ): Response<ResponseBody> {
+            // Try test environment first
+            try {
+                val testResponse = testApiService.sendChatMessage(webhookId, request)
+
+                // If test returns 404, try production
+                if (testResponse.code() == 404) {
+                    Log.w("NetworkModule", "Test environment returned 404, switching to production")
+                    val prodApiService = createProdApiService()
+                    return prodApiService.sendChatMessage(webhookId, request)
+                }
+
+                // Otherwise return test response (whether success or other error)
+                return testResponse
+
+            } catch (e: Exception) {
+                // If test environment is unreachable, try production
+                Log.e("NetworkModule", "Test environment failed: ${e.message}, trying production")
+                val prodApiService = createProdApiService()
+                return prodApiService.sendChatMessage(webhookId, request)
+            }
+        }
+
+        override suspend fun sendTaskWithImages(
+            webhookId: String,
+            chatInput: RequestBody,
+            images: List<MultipartBody.Part>
+        ): Response<ValidationResponse> {
+            // Try test environment first
+            try {
+                val testResponse = testApiService.sendTaskWithImages(webhookId, chatInput, images)
+
+                // If test returns 404, try production
+                if (testResponse.code() == 404) {
+                    Log.w("NetworkModule", "Test environment returned 404, switching to production")
+                    val prodApiService = createProdApiService()
+                    return prodApiService.sendTaskWithImages(webhookId, chatInput, images)
+                }
+
+                // Otherwise return test response
+                return testResponse
+
+            } catch (e: Exception) {
+                // If test environment is unreachable, try production
+                Log.e("NetworkModule", "Test environment failed: ${e.message}, trying production")
+                val prodApiService = createProdApiService()
+                return prodApiService.sendTaskWithImages(webhookId, chatInput, images)
+            }
+        }
+    }
 }

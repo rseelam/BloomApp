@@ -1,8 +1,9 @@
+// app/src/main/java/com/bloom/familytasks/network/ApiModels.kt
 package com.bloom.familytasks.network
 
 import com.google.gson.annotations.SerializedName
 
-// Request models matching n8n workflow expectations
+// Keep your existing working format - don't break what works!
 data class ChatRequest(
     @SerializedName("chatInput")
     val chatInput: String
@@ -12,16 +13,16 @@ data class ChatInputData(
     @SerializedName("message")
     val message: String,
 
-    @SerializedName("sender_id")
+    @SerializedName("sender_id")  // Keep original working name
     val senderId: String,
 
-    @SerializedName("child_name")
+    @SerializedName("child_name")  // Keep original working name
     val childName: String? = null,
 
-    @SerializedName("task_id")
+    @SerializedName("task_id")     // Keep original working name
     val taskId: String? = null,
 
-    @SerializedName("parent_task_message")
+    @SerializedName("parent_task_message")  // Keep original working name
     val parentTaskMessage: String? = null,
 
     @SerializedName("images")
@@ -48,7 +49,7 @@ data class ImageAttachment(
     val size: Long? = null
 )
 
-// Response models from n8n workflow
+// Your existing response models - keep them unchanged
 data class ChatResponse(
     @SerializedName("task_id")
     val taskId: String? = null,
@@ -86,28 +87,34 @@ data class ChatResponse(
     @SerializedName("difficulty_level")
     val difficultyLevel: String? = null,
 
-    @SerializedName("points_available")
+    @SerializedName("points_available")  // Keep the API field name as is for compatibility
     val pointsAvailable: PointsBreakdown? = null,
 
     @SerializedName("bonus_opportunities")
     val bonusOpportunities: List<String>? = null,
 
     @SerializedName("created_at")
-    val createdAt: String? = null
+    val createdAt: String? = null,
+
+    // Optional - only if your workflow supports these
+    @SerializedName("response_message")
+    val responseMessage: String? = null
 )
 
+// This is for the API response - the field names might need to stay the same for compatibility
+// but we interpret them as dollar amounts
 data class PointsBreakdown(
     @SerializedName("base_points")
-    val basePoints: Int,
+    val basePoints: Int,  // Actually dollars
 
     @SerializedName("quality_points")
-    val qualityPoints: Int,
+    val qualityPoints: Int,  // Actually quality bonus dollars
 
     @SerializedName("bonus_points")
-    val bonusPoints: Int,
+    val bonusPoints: Int,  // Actually bonus dollars
 
     @SerializedName("total_possible")
-    val totalPossible: Int
+    val totalPossible: Int  // Actually total dollars
 )
 
 data class ValidationResponse(
@@ -120,8 +127,8 @@ data class ValidationResponse(
     @SerializedName("task_title")
     val taskTitle: String,
 
-    @SerializedName("total_points_earned")
-    val totalPointsEarned: Double,
+    @SerializedName("total_points_earned")  // Keep API field name for compatibility
+    val totalPointsEarned: Double,  // Actually dollars earned
 
     @SerializedName("validation_status")
     val validationStatus: String,

@@ -1,33 +1,51 @@
+// Complete UpdatedChildScreen.kt with dollars instead of points
 package com.bloom.familytasks.ui.screens
 
+// Android imports
 import android.net.Uri
-import android.os.Build
+
+// Activity Result imports
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+
+// Compose animation imports
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
+
+// Compose foundation imports
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+
+// Material Icons imports
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+
+// Material3 imports
 import androidx.compose.material3.*
+
+// Compose runtime imports
 import androidx.compose.runtime.*
+
+// Compose UI imports
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
+
+// Your app's imports
 import com.bloom.familytasks.data.models.ChoreAssignment
 import com.bloom.familytasks.data.models.TaskStatus
-import com.bloom.familytasks.repository.ApiStatus
+import com.bloom.familytasks.data.models.MessageType
+import com.bloom.familytasks.ui.components.BottomChatBar
+import com.bloom.familytasks.ui.components.SuccessBanner
+import com.bloom.familytasks.ui.components.BannerStateManager
+import com.bloom.familytasks.ui.components.BannerType
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,12 +53,60 @@ import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 fun UpdatedChildScreen(
     viewModel: EnhancedTaskViewModel,
     childName: String = "Johnny",
-    onNavigateHome: () -> Unit = {}
+    onNavigateHome: () -> Unit = {},
+    onNavigateToChat: () -> Unit = {}
 ) {
     val assignments by viewModel.choreAssignments.collectAsState()
     val myAssignments = assignments.filter { it.assignedTo == "Johnny" }
     var selectedAssignment by remember { mutableStateOf<ChoreAssignment?>(null) }
     var showSubmitDialog by remember { mutableStateOf(false) }
+
+    // Chat input state
+    var chatMessage by remember { mutableStateOf("") }
+    var selectedImages by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
+    // Initialize banner manager
+    val bannerManager = remember { BannerStateManager() }
+    val bannerState by bannerManager.bannerState
+
+    // Monitor API status
+    val apiStatus by viewModel.apiStatus.collectAsState()
+    var hasShownSuccessForCurrentStatus by remember { mutableStateOf(false) }
+
+    LaunchedEffect(apiStatus) {
+        when (apiStatus) {
+            is com.bloom.familytasks.repository.ApiStatus.Loading -> {
+                hasShownSuccessForCurrentStatus = false
+            }
+            is com.bloom.familytasks.repository.ApiStatus.Success -> {
+                if (!hasShownSuccessForCurrentStatus && bannerState.isVisible) {
+                    bannerManager.showSuccess("✅ Success! Task completed successfully!")
+                    hasShownSuccessForCurrentStatus = true
+                }
+            }
+            is com.bloom.familytasks.repository.ApiStatus.Error -> {
+                if (bannerState.isVisible) {
+                    bannerManager.showError("❌ Failed to submit. Please try again.")
+                }
+            }
+            else -> {}
+        }
+    }
+
+    // Image picker for chat
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetMultipleContents()
+    ) { uris: List<Uri> ->
+        selectedImages = uris.take(3)
+    }
+
+    // Clean up when leaving
+    DisposableEffect(Unit) {
+        onDispose {
+            bannerManager.hide()
+            hasShownSuccessForCurrentStatus = false
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -55,514 +121,179 @@ fun UpdatedChildScreen(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = onNavigateHome) {
+                    IconButton(onClick = {
+                        bannerManager.hide()
+                        onNavigateHome()
+                    }) {
                         Icon(Icons.Default.Home, contentDescription = "Home")
                     }
                 },
                 actions = {
-                    Icon(
-                        Icons.Default.Stars,
-                        contentDescription = "Points",
-                        modifier = Modifier.padding(end = 8.dp)
-                    )
-                    Text(
-                        text = "$${myAssignments.filter { it.status == TaskStatus.VALIDATED }.sumOf { it.chore.points }}",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(end = 16.dp)
-                    )
+                    IconButton(onClick = {
+                        bannerManager.hide()
+                        onNavigateToChat()
+                    }) {
+                        Icon(Icons.Default.Chat, contentDescription = "Full Chat")
+                    }
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.AttachMoney,
+                            contentDescription = "Money",
+                            modifier = Modifier.size(20.dp),
+                            tint = Color(0xFF4CAF50)
+                        )
+                        Text(
+                            text = "${myAssignments.filter { it.status == TaskStatus.VALIDATED }.sumOf { it.chore.points }}",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(end = 16.dp),
+                            color = Color(0xFF4CAF50),
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             )
+        },
+        modifier = Modifier.clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null
+        ) {
+            bannerManager.hide()
         }
     ) { paddingValues ->
-        if (myAssignments.isEmpty()) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Icon(
-                        Icons.Default.Assignment,
-                        contentDescription = null,
-                        modifier = Modifier.size(64.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        "No tasks assigned yet",
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                    Text(
-                        "Ask parent to assign tasks",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                // Pending Tasks
-                val pendingTasks = myAssignments.filter { it.status == TaskStatus.PENDING }
-                if (pendingTasks.isNotEmpty()) {
-                    item {
-                        Text(
-                            "To Do",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    items(pendingTasks) { assignment ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer
-                            )
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        imageVector = assignment.chore.icon,
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(12.dp))
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = assignment.chore.name,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = assignment.chore.description,
-                                            style = MaterialTheme.typography.bodySmall
-                                        )
-                                    }
-                                    Text(
-                                        "$${assignment.chore.points}",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Button(
-                                    onClick = {
-                                        selectedAssignment = assignment
-                                        showSubmitDialog = true
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(Icons.Default.CameraAlt, contentDescription = null)
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text("Submit with Photos")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // Completed Tasks
-                val completedTasks = myAssignments.filter { it.status == TaskStatus.VALIDATED }
-                if (completedTasks.isNotEmpty()) {
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            "Completed",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    items(completedTasks) { assignment ->
-                        Card(
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    Icons.Default.CheckCircle,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(32.dp),
-                                    tint = MaterialTheme.colorScheme.tertiary
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = assignment.chore.name,
-                                        style = MaterialTheme.typography.titleMedium
-                                    )
-                                    Text(
-                                        "Earned $${assignment.chore.points}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.tertiary
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Photo submission dialog
-    if (showSubmitDialog) {
-        SimplePhotoSubmissionDialog(
-            assignment = selectedAssignment,
-            viewModel = viewModel,
-            onDismiss = { showSubmitDialog = false },
-            onSubmit = { images, message ->
-                selectedAssignment?.let {
-                    viewModel.submitTaskWithN8n(it.id, images, message)
-                }
-                showSubmitDialog = false
-            }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun EnhancedTaskCard(
-    assignment: ChoreAssignment,
-    onSubmit: () -> Unit,
-    isLoading: Boolean
-) {
-    val statusColor = when (assignment.status) {
-        TaskStatus.PENDING -> MaterialTheme.colorScheme.surfaceVariant
-        TaskStatus.SUBMITTED -> MaterialTheme.colorScheme.secondaryContainer
-        TaskStatus.VALIDATED -> MaterialTheme.colorScheme.tertiaryContainer
-        TaskStatus.REJECTED -> MaterialTheme.colorScheme.errorContainer
-        else -> MaterialTheme.colorScheme.surface
-    }
-
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = statusColor)
-    ) {
-        Column(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+                .fillMaxSize()
+                .padding(paddingValues)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier.fillMaxSize()
             ) {
-                Box {
-                    Icon(
-                        imageVector = assignment.chore.icon,
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp)
-                    )
-                    if (assignment.status == TaskStatus.PENDING) {
-                        Badge(
-                            modifier = Modifier.align(Alignment.TopEnd),
-                            containerColor = MaterialTheme.colorScheme.tertiary
-                        ) {
-                            Text("AI", style = MaterialTheme.typography.labelSmall)
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = assignment.chore.name,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = assignment.chore.description,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                    if (assignment.status == TaskStatus.PENDING) {
-                        Text(
-                            text = "📸 Take photos for AI validation",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-                }
-
-                AssistChip(
-                    onClick = { },
-                    label = { Text("${assignment.chore.points} pts") }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AssistChip(
-                    onClick = { },
-                    label = { Text(assignment.status.name.replace("_", " ")) },
-                    leadingIcon = {
-                        when (assignment.status) {
-                            TaskStatus.PENDING -> Icon(Icons.Default.Schedule, contentDescription = null)
-                            TaskStatus.SUBMITTED -> Icon(Icons.Default.HourglassBottom, contentDescription = null)
-                            TaskStatus.VALIDATED -> Icon(Icons.Default.Verified, contentDescription = null)
-                            TaskStatus.REJECTED -> Icon(Icons.Default.Cancel, contentDescription = null)
-                            else -> null
-                        }
-                    }
-                )
-
-                if (assignment.status == TaskStatus.PENDING) {
-                    Button(
-                        onClick = onSubmit,
-                        enabled = !isLoading,
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(16.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
-                        } else {
-                            Icon(Icons.Default.CameraAlt, contentDescription = null)
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Submit to AI")
-                        }
-                    }
-                }
-            }
-
-            if (assignment.comments.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Row(
-                        modifier = Modifier.padding(8.dp),
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Icon(
-                            Icons.Default.AutoAwesome,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp),
-                            tint = MaterialTheme.colorScheme.tertiary
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = assignment.comments,
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun N8nTaskSubmissionDialog(
-    assignment: ChoreAssignment?,
-    viewModel: EnhancedTaskViewModel,
-    onDismiss: () -> Unit,
-    onSubmit: (List<Uri>, String) -> Unit,
-    isLoading: Boolean
-) {
-    val selectedImages = remember { mutableStateListOf<Uri>() }
-    var completionMessage by remember { mutableStateOf("I completed the task!") }
-
-    val multiplePhotoPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems = 5),
-        onResult = { uris ->
-            selectedImages.clear()
-            selectedImages.addAll(uris)
-        }
-    )
-
-    // Option 2: Fallback for older Android versions
-    val legacyPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents(),
-        onResult = { uris ->
-            selectedImages.clear()
-            selectedImages.addAll(uris.take(5))
-        }
-    )
-
-    // Option 3: Single image picker (most compatible)
-    val singlePhotoPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            uri?.let {
-                if (selectedImages.size < 5) {
-                    selectedImages.add(it)
-                }
-            }
-        }
-    )
-
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetMultipleContents()
-    ) { uris: List<Uri> ->
-        selectedImages.clear()
-        selectedImages.addAll(uris.take(5)) // Limit to 5 images
-    }
-
-    AlertDialog(
-        onDismissRequest = { if (!isLoading) onDismiss() },
-        icon = {
-            Icon(Icons.Default.CameraEnhance, contentDescription = null)
-        },
-        title = {
-            Column {
-                Text("Submit for AI Validation")
-                Text(
-                    "Task: ${assignment?.chore?.name}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = completionMessage,
-                    onValueChange = { completionMessage = it },
-                    label = { Text("Tell AI about your work") },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = !isLoading,
-                    minLines = 2
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text("📸 Add proof photos for AI to validate:")
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {// Primary button - try modern picker first
-                    Button(
-                        onClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                                // Use modern photo picker for Android 13+
-                                multiplePhotoPicker.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                )
-                            } else {
-                                // Use legacy picker for older versions
-                                legacyPicker.launch("image/*")
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                        enabled = !isLoading && selectedImages.size < 5
-                    ) {
-                        Icon(
-                            Icons.Default.PhotoLibrary,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Select", fontSize = 14.sp)
-                    }
-
-                    // Secondary button - add one at a time
-                    OutlinedButton(
-                        onClick = {
-                            singlePhotoPicker.launch("image/*")
-                        },
-                        modifier = Modifier.weight(1f),
-                        enabled = !isLoading && selectedImages.size < 5
-                    ) {
-                        Icon(
-                            Icons.Default.Add,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text("Add One", fontSize = 14.sp)
-                    }
-                }
-
-                if (selectedImages.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer
-                        )
+                // Main content area
+                if (myAssignments.isEmpty()) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { bannerManager.hide() },
+                        contentAlignment = Alignment.Center
                     ) {
                         Column(
-                            modifier = Modifier.padding(8.dp)
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                "Selected ${selectedImages.size} photo(s) for AI analysis",
-                                style = MaterialTheme.typography.labelMedium
+                            Icon(
+                                Icons.Default.Assignment,
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "No tasks assigned yet",
+                                style = MaterialTheme.typography.titleLarge
+                            )
+                            Text(
+                                "Ask parent for chores using the chat below!",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { bannerManager.hide() },
+                        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        val pendingTasks = myAssignments.filter { it.status == TaskStatus.PENDING }
+                        if (pendingTasks.isNotEmpty()) {
+                            item {
+                                Text(
+                                    "To Do",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
 
-                            Spacer(modifier = Modifier.height(8.dp))
+                            items(pendingTasks) { assignment ->
+                                TaskCard(
+                                    assignment = assignment,
+                                    onSubmit = {
+                                        bannerManager.hide()
+                                        selectedAssignment = assignment
+                                        showSubmitDialog = true
+                                    }
+                                )
+                            }
+                        }
 
-                            LazyRow(
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                modifier = Modifier.height(100.dp)
-                            ) {
-                                items(selectedImages) { uri ->
-                                    Box(
+                        val completedTasks = myAssignments.filter { it.status == TaskStatus.VALIDATED }
+                        if (completedTasks.isNotEmpty()) {
+                            item {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    "Completed",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            items(completedTasks) { assignment ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color(0xFFE8F5E9)
+                                    )
+                                ) {
+                                    Row(
                                         modifier = Modifier
-                                            .size(100.dp)
-                                            .clip(RoundedCornerShape(8.dp))
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(uri),
+                                        Icon(
+                                            Icons.Default.CheckCircle,
                                             contentDescription = null,
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Crop
+                                            modifier = Modifier.size(32.dp),
+                                            tint = Color(0xFF4CAF50)
+//                                            tint = MaterialTheme.colorScheme.tertiary
                                         )
-
-                                        if (!isLoading) {
-                                            IconButton(
-                                                onClick = { selectedImages.remove(uri) },
-                                                modifier = Modifier
-                                                    .align(Alignment.TopEnd)
-                                                    .size(24.dp)
-                                                    .background(
-                                                        MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
-                                                        RoundedCornerShape(12.dp)
-                                                    )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Column(modifier = Modifier.weight(1f)) {
+                                            Text(
+                                                text = assignment.chore.name,
+                                                style = MaterialTheme.typography.titleMedium
+                                            )
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically
                                             ) {
+                                                Text(
+                                                    "Earned ",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color(0xFF2E7D32)
+//                                                    color = MaterialTheme.colorScheme.tertiary
+                                                )
                                                 Icon(
-                                                    Icons.Default.Close,
-                                                    contentDescription = "Remove",
-                                                    modifier = Modifier.size(16.dp)
+                                                    Icons.Default.AttachMoney,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(14.dp),
+                                                    tint = Color(0xFF2E7D32)
+//                                                            tint = MaterialTheme.colorScheme.tertiary
+                                                )
+                                                Text(
+                                                    "${assignment.chore.points}",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = Color(0xFF2E7D32),
+//                                                    color = MaterialTheme.colorScheme.tertiary,
+                                                    fontWeight = FontWeight.Bold
                                                 )
                                             }
                                         }
@@ -573,60 +304,180 @@ fun N8nTaskSubmissionDialog(
                     }
                 }
 
-                if (isLoading) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                strokeWidth = 2.dp
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("AI is validating your work...")
+                // Bottom chat bar
+                BottomChatBar(
+                    message = chatMessage,
+                    onMessageChange = {
+                        bannerManager.hide()
+                        chatMessage = it
+                    },
+                    selectedImages = selectedImages,
+                    onImagesSelected = {
+                        bannerManager.hide()
+                        selectedImages = it
+                    },
+                    onImagePickerClick = {
+                        bannerManager.hide()
+                        imagePickerLauncher.launch("image/*")
+                    },
+                    onSendClick = {
+                        if (chatMessage.isNotBlank()) {
+                            bannerManager.hide()
+                            bannerManager.showSubmitted("📤 Sending message...")
+
+                            val messageType = when {
+                                chatMessage.contains("help", ignoreCase = true) ||
+                                        chatMessage.contains("how", ignoreCase = true) -> {
+                                    viewModel.sendHelpRequest(chatMessage)
+                                    MessageType.HELP_REQUEST
+                                }
+                                chatMessage.contains("?") -> {
+                                    viewModel.sendChoreQuestion(chatMessage)
+                                    MessageType.CHORE_QUESTION
+                                }
+                                chatMessage.contains("suggest", ignoreCase = true) ||
+                                        chatMessage.contains("want to", ignoreCase = true) -> {
+                                    viewModel.suggestChore(chatMessage)
+                                    MessageType.CHORE_SUGGESTION
+                                }
+                                else -> {
+                                    viewModel.sendChatMessage(
+                                        message = chatMessage,
+                                        messageType = MessageType.GENERAL,
+                                        images = selectedImages
+                                    )
+                                    MessageType.GENERAL
+                                }
+                            }
+
+                            chatMessage = ""
+                            selectedImages = emptyList()
                         }
+                    },
+                    placeholderText = "Ask questions, request help, or suggest chores..."
+                )
+            }
+
+            // Add the reusable success banner
+            SuccessBanner(
+                bannerState = bannerState,
+                onDismiss = { bannerManager.hide() },
+                modifier = Modifier.align(Alignment.TopCenter)
+            )
+        }
+    }
+
+    // Photo submission dialog
+    if (showSubmitDialog) {
+        SimplePhotoSubmissionDialog(
+            assignment = selectedAssignment,
+            viewModel = viewModel,
+            onDismiss = {
+                bannerManager.hide()
+                showSubmitDialog = false
+            },
+            onSubmit = { images, message ->
+                selectedAssignment?.let {
+                    bannerManager.showSubmitted("📸 Submitting task with photos...")
+                    viewModel.submitTaskWithN8n(it.id, images, message)
+                }
+                showSubmitDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun TaskCard(
+    assignment: ChoreAssignment,
+    onSubmit: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = assignment.chore.icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = assignment.chore.name,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = assignment.chore.description,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                    if (assignment.chore.isCustom) {
+                        Text(
+                            "✨ Custom task created by ${assignment.assignedBy}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
                     }
                 }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onSubmit(selectedImages, completionMessage)
-                },
-                enabled = selectedImages.isNotEmpty() && !isLoading
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.onPrimary
+                // Show dollar amount instead of points
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        Icons.Default.AttachMoney,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.primary
                     )
-                } else {
-                    Icon(Icons.Default.Send, contentDescription = null)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Submit to AI")
+                    Text(
+                        "${assignment.chore.points}",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                enabled = !isLoading
+
+            if (assignment.comments.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    )
+                ) {
+                    Text(
+                        text = assignment.comments,
+                        modifier = Modifier.padding(8.dp),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Submit button
+            Button(
+                onClick = onSubmit,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Cancel")
+                Icon(Icons.Default.CameraAlt, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("Submit with Photos")
             }
         }
-    )
+    }
 }
 
 @Composable
@@ -643,7 +494,7 @@ fun SimplePhotoSubmissionDialog(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
         selectedImages.clear()
-        selectedImages.addAll(uris.take(3)) // Limit to 3 images
+        selectedImages.addAll(uris.take(3))
     }
 
     AlertDialog(
