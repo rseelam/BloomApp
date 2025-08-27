@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bloom.familytasks.network.NetworkModule.HomeScreen
 import com.bloom.familytasks.ui.screens.*
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 
@@ -35,6 +36,9 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
                 onChildClick = {
                     viewModel.switchUser("Johnny")
                     navController.navigate("child")
+                },
+                onSettingsClick = {
+                    navController.navigate("settings")
                 }
             )
         }
@@ -67,6 +71,13 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
         composable("chat") {
             EnhancedChatScreen(
                 viewModel = viewModel,
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Add settings route
+        composable("settings") {
+            SimpleSettingsScreen(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
