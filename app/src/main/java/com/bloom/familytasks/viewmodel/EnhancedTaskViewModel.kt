@@ -6,6 +6,8 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.util.Log
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CleaningServices
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.bloom.familytasks.data.models.*
@@ -68,12 +70,66 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
     // ========== CONVENIENCE METHODS FOR UI ==========
 
     fun assignChoreWithN8n(chore: Chore, childName: String) {
-        assignChore(
-            chore = chore,
-            customDescription = null,
-            childName = childName,
-            isVoiceInput = false
-        )
+        viewModelScope.launch {
+            Log.d("ViewModel", "Assigning chore: ${chore.name} to $childName")
+
+            // Send to N8N
+            val result = repository.sendChoreToN8n(
+                chore = chore,
+                customDescription = null,
+                senderName = currentUser.value,
+                childName = childName,
+                isVoiceInput = false
+            )
+
+            result.onSuccess { assignment ->
+                Log.d("ViewModel", "Assignment created with comments: ${assignment.comments.length} chars")
+
+                // If comments are empty, update with default steps
+                if (assignment.comments.isEmpty()) {
+                    Log.w("ViewModel", "Comments empty! Adding default steps...")
+
+                    val defaultSteps = when {
+                        chore.name.contains("vacuum", ignoreCase = true) -> """
+                        • Pick up any toys, papers, or items from the carpet
+                        • Plug in the vacuum cleaner safely and turn it on
+                        • Vacuum all carpeted areas slowly back and forth
+                        • Put the vacuum away when done
+                        
+                        ⚠️ Safety:
+                        • Watch out for the cord
+                        • Keep fingers away from moving parts
+                        
+                        📸 Photos Needed:
+                        • Before and after photos
+                        
+                        💪 Great job!
+                    """.trimIndent()
+                        else -> """
+                        • Complete the task as described
+                        • Do a thorough job
+                        • Take photos before and after
+                        
+                        💪 You can do it!
+                    """.trimIndent()
+                    }
+
+                    val updatedAssignment = assignment.copy(comments = defaultSteps)
+
+                    val currentAssignments = choreAssignments.value.toMutableList()
+                    val index = currentAssignments.indexOfFirst { it.id == assignment.id }
+                    if (index >= 0) {
+                        currentAssignments[index] = updatedAssignment
+                        repository.updateAssignmentLocally(currentAssignments)
+                        Log.d("ViewModel", "Updated assignment with default steps")
+                    }
+                }
+            }
+
+            result.onFailure { error ->
+                Log.e("ViewModel", "Failed to assign chore: ${error.message}")
+            }
+        }
     }
 
     fun sendCustomChoreRequest(customChoreDescription: String, childName: String = "Johnny") {

@@ -47,6 +47,9 @@ import com.bloom.familytasks.ui.components.SuccessBanner
 import com.bloom.familytasks.ui.components.BannerStateManager
 import com.bloom.familytasks.ui.components.BannerType
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
+import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.unit.sp
+import com.bloom.familytasks.BuildConfig
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -387,6 +390,8 @@ fun UpdatedChildScreen(
     }
 }
 
+// Replace the TaskCard composable in UpdatedChildScreen.kt with this enhanced version
+
 @Composable
 fun TaskCard(
     assignment: ChoreAssignment,
@@ -395,7 +400,7 @@ fun TaskCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = Color(0xFFFFC773) // Orange color matching your screenshot
         )
     ) {
         Column(
@@ -403,6 +408,7 @@ fun TaskCard(
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // Header with icon, title, and reward
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -410,58 +416,268 @@ fun TaskCard(
                 Icon(
                     imageVector = assignment.chore.icon,
                     contentDescription = null,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier.size(28.dp),
+                    tint = Color(0xFF6B4700)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = assignment.chore.name,
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF3E2723)
                     )
                     Text(
                         text = assignment.chore.description,
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF5D4037)
                     )
-                    if (assignment.chore.isCustom) {
+                }
+                Text(
+                    text = "$ ${assignment.chore.points}",
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = Color(0xFF2E7D32),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Steps to Complete section - white background
+            if (assignment.comments.isNotEmpty()) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
                         Text(
-                            "✨ Custom task created by ${assignment.assignedBy}",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.secondary
+                            text = "Steps to Complete:",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+
+                        // Parse and display comments
+                        val lines = assignment.comments.split("\n").filter { it.isNotBlank() }
+                        var isInSafetySection = false
+                        var isInPhotoSection = false
+                        var isInBonusSection = false
+
+                        lines.forEach { line ->
+                            val cleanLine = line.trim()
+
+                            when {
+                                // Safety section header
+                                cleanLine.contains("⚠️ Safety:") -> {
+                                    isInSafetySection = true
+                                    isInPhotoSection = false
+                                    isInBonusSection = false
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Warning,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp),
+                                            tint = Color(0xFFFF6B35)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Safety Reminders",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFFFF6B35)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+
+                                // Photo section header
+                                cleanLine.contains("📸 Photos Needed:") -> {
+                                    isInPhotoSection = true
+                                    isInSafetySection = false
+                                    isInBonusSection = false
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            Icons.Default.CameraAlt,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp),
+                                            tint = Color(0xFF4CAF50)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Photos Required",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF4CAF50)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+
+                                // Bonus section header
+                                cleanLine.contains("💰 Bonus Tips:") -> {
+                                    isInBonusSection = true
+                                    isInSafetySection = false
+                                    isInPhotoSection = false
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            Icons.Default.Star,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp),
+                                            tint = Color(0xFFFFC107)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Bonus Tips",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFFFFC107)
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                }
+
+                                // Encouragement message
+                                cleanLine.contains("💪") -> {
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                    Card(
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = Color(0xFFE8F5E9)
+                                        ),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = cleanLine.replace("💪", "").trim(),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium,
+                                            color = Color(0xFF2E7D32),
+                                            modifier = Modifier.padding(12.dp)
+                                        )
+                                    }
+                                }
+
+                                // Bullet point items
+                                cleanLine.startsWith("•") -> {
+                                    val itemText = cleanLine.substring(1).trim()
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp),
+                                        verticalAlignment = Alignment.Top
+                                    ) {
+                                        // Different bullet styles for different sections
+                                        val bulletIcon = when {
+                                            isInSafetySection -> Icons.Default.Warning
+                                            isInPhotoSection -> Icons.Default.PhotoCamera
+                                            isInBonusSection -> Icons.Default.Star
+                                            else -> Icons.Default.CheckCircleOutline
+                                        }
+
+                                        val bulletColor = when {
+                                            isInSafetySection -> Color(0xFFFF6B35)
+                                            isInPhotoSection -> Color(0xFF4CAF50)
+                                            isInBonusSection -> Color(0xFFFFC107)
+                                            else -> Color(0xFF757575)
+                                        }
+
+                                        Icon(
+                                            imageVector = bulletIcon,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(18.dp)
+                                                .padding(top = 2.dp),
+                                            tint = bulletColor
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = itemText,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = Color(0xFF424242),
+                                            lineHeight = 20.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                // Fallback if no comments
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Steps to Complete:",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Text(
+                            text = "• Complete the task as described above\n• Make sure to do a thorough job\n• Take before and after photos",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF424242)
                         )
                     }
                 }
-                // Show dollar amount instead of points
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Photo reminder section
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color(0xFFFFE0B2)
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Row(
+                    modifier = Modifier.padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        Icons.Default.AttachMoney,
+                        Icons.Default.CameraAlt,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = Color(0xFF6B4700)
                     )
-                    Text(
-                        "${assignment.chore.points}",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
-            if (assignment.comments.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Card(
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    )
-                ) {
-                    Text(
-                        text = assignment.comments,
-                        modifier = Modifier.padding(8.dp),
-                        style = MaterialTheme.typography.bodySmall
-                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            "Remember to take photos!",
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF3E2723)
+                        )
+                        Text(
+                            "Show before & after to earn your reward",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color(0xFF5D4037)
+                        )
+                    }
                 }
             }
 
@@ -470,11 +686,22 @@ fun TaskCard(
             // Submit button
             Button(
                 onClick = onSubmit,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF6B4700)
+                )
             ) {
-                Icon(Icons.Default.CameraAlt, contentDescription = null)
+                Icon(
+                    Icons.Default.CameraAlt,
+                    contentDescription = null,
+                    tint = Color.White
+                )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text("Submit with Photos")
+                Text(
+                    "Submit with Photos",
+                    color = Color.White,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
     }
