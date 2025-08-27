@@ -4,10 +4,6 @@ package com.bloom.familytasks.ui.screens
 // Android imports
 import android.widget.Toast
 
-// Compose animation imports
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-
 // Compose foundation imports
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -46,7 +42,6 @@ import com.bloom.familytasks.data.ChoreRepository
 import com.bloom.familytasks.data.models.Chore
 import com.bloom.familytasks.data.models.ChoreCategory
 import com.bloom.familytasks.data.models.ChoreAssignment
-import com.bloom.familytasks.data.models.MessageType
 import com.bloom.familytasks.data.models.TaskStatus
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 import com.bloom.familytasks.ui.components.ParentChatBar
@@ -55,9 +50,6 @@ import com.bloom.familytasks.ui.components.BannerStateManager
 import com.bloom.familytasks.ui.components.BannerType
 import com.bloom.familytasks.utils.ChatUtils
 
-// Coroutines
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 // Special filter type for UI
 sealed class ChoreFilter {
