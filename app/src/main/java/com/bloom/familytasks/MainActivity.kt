@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bloom.familytasks.navigation.FamilyTasksNavigation
+import com.bloom.familytasks.network.NetworkModule
 import com.bloom.familytasks.ui.theme.FamilyTasksTheme
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 
@@ -48,6 +49,9 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize NetworkModule with application context
+        NetworkModule.init(applicationContext)
 
         // Check and request permissions
         checkAndRequestPermissions()

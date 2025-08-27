@@ -35,6 +35,9 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
                 onChildClick = {
                     viewModel.switchUser("Johnny")
                     navController.navigate("child")
+                },
+                onSettingsClick = {
+                    navController.navigate("settings")
                 }
             )
         }
@@ -70,13 +73,20 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+
+        composable("settings") {
+            SimpleSettingsScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
     }
 }
 
 @Composable
 fun HomeScreen(
     onParentClick: () -> Unit,
-    onChildClick: () -> Unit
+    onChildClick: () -> Unit,
+    onSettingsClick: () -> Unit  // ADD THIS PARAMETER
 ) {
     Column(
         modifier = Modifier
@@ -228,6 +238,22 @@ fun HomeScreen(
                     fontWeight = FontWeight.Medium
                 )
             }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Settings button at the bottom
+        TextButton(
+            onClick = onSettingsClick,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Icon(
+                Icons.Default.Settings,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text("N8N Settings")
         }
     }
 }
