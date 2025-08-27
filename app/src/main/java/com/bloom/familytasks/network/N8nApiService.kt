@@ -7,14 +7,14 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface N8nApiService {
-    @POST("webhook-test/{webhookId}")
+    @POST("{webhookId}")
     suspend fun sendChatMessage(
         @Path("webhookId") webhookId: String,
         @Body request: ChatRequest
     ): Response<ResponseBody>
 
     @Multipart
-    @POST("webhook-test/{webhookId}")
+    @POST("{webhookId}")
     suspend fun sendTaskWithImages(
         @Path("webhookId") webhookId: String,
         @Part("chatInput") chatInput: RequestBody,
