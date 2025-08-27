@@ -9,13 +9,12 @@ import java.util.concurrent.TimeUnit
 
 object NetworkModule {
     // Update this with your actual n8n webhook URL
-    private const val BASE_URL = "http://10.128.182.48:5678/"
+    private const val BASE_URL = "http://192.168.86.33:5678/"
 
 //    private const val BASE_URL = "http://10.2.250.33:5678/"
+    const val WEBHOOK_ID = "aae97eb3-5737-4083-b752-36796abac305"
 
-    const val WEBHOOK_ID = "7ff480c5-aba3-4c64-b8a9-28eefd8fae54"
-
-    const val WEBHOOK_ENDPOINT = "webhook/$WEBHOOK_ID/chat"
+    const val WEBHOOK_ENDPOINT = "webhook-test/$WEBHOOK_ID"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
