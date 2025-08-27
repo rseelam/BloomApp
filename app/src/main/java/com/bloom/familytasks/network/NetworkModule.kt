@@ -3,22 +3,6 @@ package com.bloom.familytasks.network
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.google.gson.GsonBuilder
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -29,14 +13,13 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
-import com.bloom.familytasks.ui.screens.SimpleSettingsScreen
 
 object NetworkModule {
     // Your test environment URL
-    private const val TEST_BASE_URL = "http://192.168.86.33:5678/webhook-test/"
+    private const val TEST_BASE_URL = "http://172.20.10.10:5678/webhook-test/"
 
     // Default production URL (used if not set in preferences)
-    private const val DEFAULT_PROD_BASE_URL = "http://192.168.86.33:5678/webhook/"
+    private const val DEFAULT_PROD_BASE_URL = "http://172.20.10.10:5678/webhook-default/"
 
     const val WEBHOOK_ID = "aae97eb3-5737-4083-b752-36796abac305"
 
@@ -52,33 +35,7 @@ object NetworkModule {
         sharedPrefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     }
 
-    @Composable
-    fun HomeScreen(
-        onParentClick: () -> Unit,
-        onChildClick: () -> Unit,
-        onSettingsClick: () -> Unit = {} // Add this parameter
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // ... existing UI ...
 
-            // Add Settings button at the bottom
-            Spacer(modifier = Modifier.height(32.dp))
-
-            TextButton(
-                onClick = onSettingsClick
-            ) {
-                Icon(Icons.Default.Settings, contentDescription = null)
-                Spacer(modifier = Modifier.width(4.dp))
-                Text("N8N Settings")
-            }
-        }
-    }
 
     // Get production URL from preferences or use default
     fun getProductionUrl(): String {

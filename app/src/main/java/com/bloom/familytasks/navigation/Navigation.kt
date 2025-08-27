@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.bloom.familytasks.network.NetworkModule.HomeScreen
 import com.bloom.familytasks.ui.screens.*
 import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 
@@ -75,7 +74,6 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
             )
         }
 
-        // Add settings route
         composable("settings") {
             SimpleSettingsScreen(
                 onNavigateBack = { navController.popBackStack() }
@@ -87,7 +85,8 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
 @Composable
 fun HomeScreen(
     onParentClick: () -> Unit,
-    onChildClick: () -> Unit
+    onChildClick: () -> Unit,
+    onSettingsClick: () -> Unit  // ADD THIS PARAMETER
 ) {
     Column(
         modifier = Modifier
@@ -239,6 +238,22 @@ fun HomeScreen(
                     fontWeight = FontWeight.Medium
                 )
             }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Settings button at the bottom
+        TextButton(
+            onClick = onSettingsClick,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) {
+            Icon(
+                Icons.Default.Settings,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text("N8N Settings")
         }
     }
 }
