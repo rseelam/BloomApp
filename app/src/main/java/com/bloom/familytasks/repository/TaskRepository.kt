@@ -366,7 +366,7 @@ class TaskRepository(private val context: Context) {
             Log.d("TaskRepository", "Clean JSON (first 300 chars): ${cleanJson.take(300)}")
 
             // Parse the ChatResponse
-            val response = gson.fromJson(cleanJson, ChatResponse::class.java)
+            val response = gson.fromJson(JSONObject(outputJson).getJSONObject("task_details").toString(), ChatResponse::class.java)
 
             Log.d("TaskRepository", "=== SUCCESSFULLY PARSED N8N RESPONSE ===")
             Log.d("TaskRepository", "Title: ${response.title}")
