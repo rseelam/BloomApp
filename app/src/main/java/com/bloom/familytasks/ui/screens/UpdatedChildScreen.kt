@@ -50,6 +50,7 @@ import com.bloom.familytasks.viewmodel.EnhancedTaskViewModel
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.unit.sp
 import com.bloom.familytasks.BuildConfig
+import com.bloom.familytasks.ui.components.EnhancedPhotoSubmissionDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -372,7 +373,7 @@ fun UpdatedChildScreen(
 
     // Photo submission dialog
     if (showSubmitDialog) {
-        SimplePhotoSubmissionDialog(
+        EnhancedPhotoSubmissionDialog(
             assignment = selectedAssignment,
             viewModel = viewModel,
             onDismiss = {
