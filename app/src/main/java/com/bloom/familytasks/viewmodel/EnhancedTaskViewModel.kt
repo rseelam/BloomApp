@@ -393,6 +393,14 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         repository.clearChatMessages()
     }
 
+    fun clearAllChores() {
+        viewModelScope.launch {
+            repository.clearAllAssignments()
+            repository.clearChatMessages()
+            repository.resetApiStatus()
+        }
+    }
+
     private fun updateLocalAssignment(assignment: ChoreAssignment) {
         val currentAssignments = choreAssignments.value.toMutableList()
         val index = currentAssignments.indexOfFirst { it.id == assignment.id }

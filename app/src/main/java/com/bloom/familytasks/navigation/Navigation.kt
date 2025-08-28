@@ -76,6 +76,7 @@ fun FamilyTasksNavigation(viewModel: EnhancedTaskViewModel) {
 
         composable("settings") {
             SimpleSettingsScreen(
+                viewModel = viewModel,
                 onNavigateBack = { navController.popBackStack() }
             )
         }
@@ -253,7 +254,7 @@ fun HomeScreen(
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text("N8N Settings")
+            Text("Settings")
         }
     }
 }

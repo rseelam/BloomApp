@@ -16,10 +16,10 @@ import java.util.concurrent.TimeUnit
 
 object NetworkModule {
     // Your test environment URL
-    private const val TEST_BASE_URL = "http://172.20.10.10:5678/webhook-test/"
+    private const val TEST_BASE_URL = "http://10.128.182.48:5678/webhook-test/"
 
     // Default production URL (used if not set in preferences)
-    private const val DEFAULT_PROD_BASE_URL = "http://172.20.10.10:5678/webhook-default/"
+    private const val DEFAULT_PROD_BASE_URL = "http://172.20.10.10:5678/webhook/"
 
     const val WEBHOOK_ID = "aae97eb3-5737-4083-b752-36796abac305"
 
@@ -100,23 +100,21 @@ object NetworkModule {
         ): Response<ResponseBody> {
             // Try test environment first
             try {
-                val testResponse = testApiService.sendChatMessage(webhookId, request)
-
-                // If test returns 404, try production
-                if (testResponse.code() == 404) {
-                    Log.w("NetworkModule", "Test environment returned 404, switching to production")
-                    val prodApiService = createProdApiService()
-                    return prodApiService.sendChatMessage(webhookId, request)
+                val prodApiService = createProdApiService()
+                val prodResponse = prodApiService.sendChatMessage(webhookId, request)
+                // If prod returns 404, try test
+                if (prodResponse.code() == 404) {
+                    Log.w("NetworkModule", "Prod environment returned 404, switching to test url")
+                    return testApiService.sendChatMessage(webhookId, request)
                 }
 
                 // Otherwise return test response (whether success or other error)
-                return testResponse
+                return prodResponse
 
             } catch (e: Exception) {
-                // If test environment is unreachable, try production
-                Log.e("NetworkModule", "Test environment failed: ${e.message}, trying production")
-                val prodApiService = createProdApiService()
-                return prodApiService.sendChatMessage(webhookId, request)
+                // If test environment is unreachable, try test
+                Log.e("NetworkModule", "prod environment failed: ${e.message}, trying test")
+                return testApiService.sendChatMessage(webhookId, request)
             }
         }
 
@@ -127,23 +125,22 @@ object NetworkModule {
         ): Response<ValidationResponse> {
             // Try test environment first
             try {
-                val testResponse = testApiService.sendTaskWithImages(webhookId, chatInput, images)
-
+                val prodApiService = createProdApiService()
+                val prodResponse =  prodApiService.sendTaskWithImages(webhookId, chatInput, images)
                 // If test returns 404, try production
-                if (testResponse.code() == 404) {
-                    Log.w("NetworkModule", "Test environment returned 404, switching to production")
-                    val prodApiService = createProdApiService()
-                    return prodApiService.sendTaskWithImages(webhookId, chatInput, images)
+                if (prodResponse.code() == 404) {
+                    Log.w("NetworkModule", "Prod environment returned 404, switching to test")
+//                    val prodApiService = createProdApiService()
+                    return testApiService.sendTaskWithImages(webhookId, chatInput, images)
                 }
 
                 // Otherwise return test response
-                return testResponse
+                return prodResponse
 
             } catch (e: Exception) {
                 // If test environment is unreachable, try production
-                Log.e("NetworkModule", "Test environment failed: ${e.message}, trying production")
-                val prodApiService = createProdApiService()
-                return prodApiService.sendTaskWithImages(webhookId, chatInput, images)
+                Log.e("NetworkModule", "Prod environment failed: ${e.message}, trying test")
+                return testApiService.sendTaskWithImages(webhookId, chatInput, images)
             }
         }
     }

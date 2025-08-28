@@ -893,6 +893,10 @@ class TaskRepository(private val context: Context) {
         _apiStatus.value = ApiStatus.Idle
     }
 
+    fun clearAllAssignments() {
+        _taskAssignments.value = emptyList()
+    }
+
     private fun createLocalFallbackAssignment(
         chore: Chore?,
         customDescription: String?,
@@ -926,7 +930,6 @@ class TaskRepository(private val context: Context) {
         _taskAssignments.value = _taskAssignments.value + assignment
         return Result.success(assignment)
     }
-
 }
 
 data class TaskStep(
