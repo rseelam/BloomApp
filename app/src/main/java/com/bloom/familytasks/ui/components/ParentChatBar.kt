@@ -24,7 +24,8 @@ fun ParentChatBar(
     onSendClick: () -> Unit,
     onVoiceClick: () -> Unit,
     placeholderText: String = "Type a message...",
-    isRecording: Boolean = false
+    isRecording: Boolean = false,
+    detectedDollarAmount: Int? = null
 ) {
     // Animation for recording indicator
     val infiniteTransition = rememberInfiniteTransition(label = "recording")

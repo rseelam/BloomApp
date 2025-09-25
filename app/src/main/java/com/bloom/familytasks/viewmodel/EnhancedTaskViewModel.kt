@@ -12,6 +12,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.bloom.familytasks.data.models.*
 import com.bloom.familytasks.repository.TaskRepository
+import com.bloom.familytasks.utils.DollarAmountParser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -54,15 +55,23 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
         customDescription: String? = null,
         childName: String = "Johnny",
         isVoiceInput: Boolean = false,
+        customPoints: Int? = null,
         onSuccess: ((String) -> Unit)? = null
     ) {
         viewModelScope.launch {
+
+            // Extract dollar amount if not provided
+            val dollarAmount = customPoints ?: customDescription?.let {
+                DollarAmountParser.extractDollarAmount(it)
+            }
+
             repository.sendChoreToN8n(
                 chore = chore,
                 customDescription = customDescription,
                 senderName = currentUser.value,
                 childName = childName,
-                isVoiceInput = isVoiceInput
+                isVoiceInput = isVoiceInput,
+                customPoints = dollarAmount
             )
         }
     }
@@ -133,11 +142,15 @@ class EnhancedTaskViewModel(application: Application) : AndroidViewModel(applica
     }
 
     fun sendCustomChoreRequest(customChoreDescription: String, childName: String = "Johnny") {
+
+        val dollarAmount = DollarAmountParser.extractDollarAmount(customChoreDescription)
+
         assignChore(
             chore = null,
             customDescription = customChoreDescription,
             childName = childName,
-            isVoiceInput = false
+            isVoiceInput = false,
+            customPoints = dollarAmount
         )
     }
 
