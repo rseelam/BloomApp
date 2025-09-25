@@ -49,6 +49,7 @@ import com.bloom.familytasks.ui.components.SuccessBanner
 import com.bloom.familytasks.ui.components.BannerStateManager
 import com.bloom.familytasks.ui.components.BannerType
 import com.bloom.familytasks.utils.ChatUtils
+import com.bloom.familytasks.utils.DollarAmountParser
 
 
 // Special filter type for UI
@@ -70,6 +71,8 @@ fun UpdatedParentScreen(
     var showAssignDialog by remember { mutableStateOf(false) }
     var selectedChore by remember { mutableStateOf<Chore?>(null) }
     var chatMessage by remember { mutableStateOf("") }
+
+    var extractedDollarAmount by remember { mutableStateOf<Int?>(null) }
 
     // Get all assignments for existing chores view
     val allAssignments by viewModel.choreAssignments.collectAsState()
@@ -450,12 +453,17 @@ fun UpdatedParentScreen(
                 // Get voice recording state
                 val isRecording by viewModel.isRecording.collectAsState()
 
+                // Add state for showing extracted dollar amount
+                var extractedDollarAmount by remember { mutableStateOf<Int?>(null) }
+
                 // Parent chat bar without image picker
                 ParentChatBar(
                     message = chatMessage,
                     onMessageChange = {
                         bannerManager.hide()
                         chatMessage = it
+                        // Extract and show dollar amount in real-time
+                        extractedDollarAmount = DollarAmountParser.extractDollarAmount(it)
                     },
                     onSendClick = {
                         bannerManager.hide()

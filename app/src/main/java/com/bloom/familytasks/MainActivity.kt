@@ -29,6 +29,13 @@ class MainActivity : ComponentActivity() {
     ) { permissions ->
         permissions.entries.forEach { (permission, isGranted) ->
             when (permission) {
+                Manifest.permission.CAMERA -> {
+                    if (isGranted) {
+                        Log.d("MainActivity", "Camera permission granted")
+                    } else {
+                        Log.d("MainActivity", "Camera permission denied")
+                    }
+                }
                 Manifest.permission.RECORD_AUDIO -> {
                     if (isGranted) {
                         Log.d("MainActivity", "Audio recording permission granted")
@@ -36,7 +43,8 @@ class MainActivity : ComponentActivity() {
                         Log.d("MainActivity", "Audio recording permission denied")
                     }
                 }
-                Manifest.permission.READ_EXTERNAL_STORAGE -> {
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.READ_MEDIA_IMAGES -> {
                     if (isGranted) {
                         Log.d("MainActivity", "Storage permission granted")
                     } else {
@@ -74,6 +82,15 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    val hasCameraPermission = remember {
+                        mutableStateOf(
+                            ContextCompat.checkSelfPermission(
+                                this,
+                                Manifest.permission.CAMERA
+                            ) == PackageManager.PERMISSION_GRANTED
+                        )
+                    }
+
                     // Pass permission state to navigation if needed
                     FamilyTasksNavigation(taskViewModel)
                 }
@@ -83,6 +100,15 @@ class MainActivity : ComponentActivity() {
 
     private fun checkAndRequestPermissions() {
         val permissionsToRequest = mutableListOf<String>()
+
+        // Check camera permission
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissionsToRequest.add(Manifest.permission.CAMERA)
+        }
 
         // Check audio recording permission
         if (ContextCompat.checkSelfPermission(

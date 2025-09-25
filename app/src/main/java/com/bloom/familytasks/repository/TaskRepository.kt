@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Assignment
 import androidx.compose.material.icons.filled.CleaningServices
 import com.bloom.familytasks.data.models.*
 import com.bloom.familytasks.network.*
+import com.bloom.familytasks.utils.DollarAmountParser
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,24 +42,44 @@ class TaskRepository(private val context: Context) {
         customDescription: String? = null,
         senderName: String,
         childName: String,
-        isVoiceInput: Boolean = false
+        isVoiceInput: Boolean = false,
+        customPoints: Int? = null
     ): Result<ChoreAssignment> = withContext(Dispatchers.IO) {
         try {
             _apiStatus.value = ApiStatus.Loading
 
-            // Build message for N8N
+            val extractedPoints = if (customPoints == null && customDescription != null) {
+                DollarAmountParser.extractDollarAmount(customDescription)
+            } else {
+                customPoints
+            }
+
+            // Clean the description by removing dollar references
+            val cleanedDescription = if (extractedPoints != null && customDescription != null) {
+                DollarAmountParser.removeDollarReferences(customDescription)
+            } else {
+                customDescription
+            }
+
+            // Build message for N8N with dollar amount included
             val choreMessage = when {
                 chore != null -> "${chore.name}: ${chore.description}"
-                customDescription != null -> "CUSTOM_CHORE: $customDescription"
+                cleanedDescription != null -> {
+                    val dollarInfo = extractedPoints?.let { " [REWARD: $$it]" } ?: ""
+                    "CUSTOM_CHORE: $cleanedDescription$dollarInfo"
+                }
                 else -> throw IllegalArgumentException("Either chore or customDescription must be provided")
             }
 
+            // Include dollar amount in the API request
             val chatInputData = ChatInputData(
                 message = choreMessage,
                 senderId = "parent_${senderName.lowercase()}",
                 childName = childName,
                 taskId = "task_${System.currentTimeMillis()}_$childName",
-                parentTaskMessage = choreMessage
+                parentTaskMessage = choreMessage,
+                // Add a field for dollar amount if your API supports it
+                // customReward = extractedPoints
             )
 
             val request = ChatRequest(chatInput = gson.toJson(chatInputData))
@@ -119,13 +140,12 @@ class TaskRepository(private val context: Context) {
 
                 Log.d("TaskRepository", "Final comments length: ${finalComments.length}")
 
-                // Create the chore
                 val finalChore = chore ?: Chore(
                     id = System.currentTimeMillis().toInt(),
-                    name = chatResponse.title ?: extractChoreTitle(customDescription ?: "Custom Task"),
-                    description = chatResponse.description ?: customDescription ?: "Custom task",
+                    name = chatResponse.title ?: extractChoreTitle(cleanedDescription ?: "Custom Task"),
+                    description = chatResponse.description ?: cleanedDescription ?: "Custom task",
                     icon = Icons.Default.Assignment,
-                    points = chore?.points ?: 2,
+                    points = extractedPoints ?: chore?.points ?: 2,  // USE EXTRACTED POINTS
                     category = chore?.category ?: ChoreCategory.CUSTOM,
                     isCustom = chore == null,
                     createdBy = senderName

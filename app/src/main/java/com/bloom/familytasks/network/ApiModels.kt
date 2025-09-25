@@ -25,6 +25,9 @@ data class ChatInputData(
     @SerializedName("parent_task_message")  // Keep original working name
     val parentTaskMessage: String? = null,
 
+    @SerializedName("custom_reward")  // ADD THIS FIELD
+    val customReward: Int? = null,
+
     @SerializedName("images")
     val images: List<ImageAttachment>? = null,
 
